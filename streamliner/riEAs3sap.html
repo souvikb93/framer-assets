@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@font-face{font-family:'Uncut Sans';src:url(https://cdn.jsdelivr.net/gh/kaspernordkvist/uncut_sans@b3b42467781e3bd98c68f2d70eba325196e7d9c5/Webfonts/UncutSans-Variable.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
+:root{--t-display:40px;--t-title-lg:24px;--t-title:18px;--t-body:14px;--t-caption:12px;--t-micro:10px;--r-surface:24px;--r-card:16px;--r-inner:12px;--r-node:8px;--r-xs:4px;--r-pill:999px}
+@media (max-width:1023px){:root{--t-display:30px;--t-title-lg:18px;--t-title:16px}}
+@media (max-width:767px){:root{--t-display:22px;--t-title-lg:16px;--t-title:15px}}
+
+html,body{width:100%}body{display:block!important}body>div{width:100%}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent;font-family:'Uncut Sans',-apple-system,sans-serif;color:#121212;-webkit-font-smoothing:antialiased}
+.wrap{padding:0;display:flex;flex-direction:column}
+.bp{border:1px solid #D4D4D8;border-radius:var(--r-card);overflow:hidden;display:grid;grid-template-columns:150px repeat(6,minmax(0,1fr));background:#fff}
+.c{padding:11px 13px;border-right:1px solid #E5E5E5;border-top:1px solid #E5E5E5;display:flex;flex-direction:column;gap:7px;min-width:0}
+.c.last{border-right:0}
+.rl{flex-direction:row;align-items:center;gap:8px;background:#F4F6FA;border-right:1px solid #D4D4D8;font-size:11.5px;font-weight:600;color:#121212;line-height:1.25}
+.rl svg{width:15px;height:15px;flex:none;color:#696970}
+.hd{border-top:0;background:#E3F0FA;flex-direction:row;align-items:center;gap:8px;position:relative;border-right-color:#C8E3F7}
+.hd.corner{background:#F4F6FA;border-right:1px solid #D4D4D8}
+.hd .num{width:21px;height:21px;border-radius:50%;background:#0672CB;color:#fff;font-size:10.5px;font-weight:600;display:grid;place-items:center;flex:none}
+.hd b{font-size:11.5px;font-weight:600;line-height:1.25;color:#121212}
+.hd:not(.last):not(.corner)::after{content:"";position:absolute;right:-7px;top:50%;width:12px;height:12px;background:#E3F0FA;border-top:1px solid #C8E3F7;border-right:1px solid #C8E3F7;transform:translateY(-50%) rotate(45deg);z-index:2}
+.card{font:inherit;text-align:left;cursor:pointer;background:#fff;border:1px solid #E5E5E5;border-radius:var(--r-node);padding:5px 9px;font-size:11.5px;line-height:1.35;color:#121212;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .2s,box-shadow .2s}
+.card:hover,.card:focus-visible{border-color:#0672CB;box-shadow:0 0 0 1px #0672CB;outline:none}
+.ev{background:#F4F6FA;border-color:#E5E5E5;color:#454548}
+.fs{background:#F2F8FD;border-color:#C8E3F7;color:#0063B8;font-weight:500}
+.bs{background:#fff;border-color:#D4D4D8;color:#454548}
+.sp{background:#FFF9EE;border-color:#F5C97A;color:#A15C00}
+.sys{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.04em;color:#0063B8;background:#C8E3F7;border-radius:var(--r-node);padding:2px 6px;align-self:flex-start;white-space:nowrap}
+.ln{grid-column:1/8;display:flex;align-items:center;gap:10px;padding:0 13px;height:26px;background:#FAFBFC;border-top:1px dashed #A1A1AA}
+.ln em{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.02em;color:#696970;white-space:nowrap}
+.ln hr{flex:1;border:0;border-top:1px dashed #D4D4D8}
+.scrim{position:fixed;inset:0;background:rgba(18,18,18,.45);display:none;align-items:center;justify-content:center;z-index:5;padding:16px}
+.scrim.on{display:flex}
+.dlg{background:#fff;border-radius:var(--r-card);padding:28px;width:min(440px,100%);display:flex;flex-direction:column;position:relative;box-shadow:0 24px 48px rgba(18,18,18,.22);animation:pop .2s ease-out}
+.dlg:focus{outline:none}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.dh{display:flex;align-items:center;gap:8px;padding-right:48px;min-height:28px}
+.tag{font-size:11px;font-weight:600;letter-spacing:.02em;padding:4px 8px;border-radius:var(--r-node);background:#F0F1F4;color:#454548}
+.tag.fs{background:#C8E3F7;color:#0063B8}.tag.bs{background:#F0F1F4;color:#454548}.tag.sp{background:#FFF1DB;color:#A15C00}.tag.ev{background:#F4F6FA;color:#454548}
+.phs{font-size:12px;font-weight:500;color:#696970}
+.dlg h4{font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.01em;margin-top:16px}
+.dlg p{font-size:15px;line-height:1.6;color:#454548;margin-top:8px}
+.x{position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:var(--r-pill);border:1px solid #E5E5E5;background:#fff;cursor:pointer;display:grid;place-items:center;transition:background .15s,border-color .15s}
+.x:hover{background:#F4F6FA;border-color:#D4D4D8}.x:focus-visible{outline:2px solid #0672CB;outline-offset:2px}
+.x svg{width:16px;height:16px}
+@media (prefers-reduced-motion:reduce){.dlg{animation:none}}
+@media (min-width:900px){body{min-height:478px}}
+@media (max-width:1150px){.bp{grid-template-columns:130px repeat(6,minmax(0,1fr))}.c{padding:11px 9px}.card{padding:5px 8px;font-size:11px}}
+@media (max-width:760px){.wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}.bp{min-width:940px}}
+@media (max-width:440px){.scrim{padding:12px}.dlg{padding:16px}}
+</style></head><body>
+<div class="wrap"><div class="bp" id="bp"></div></div>
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="dlg" id="dlg" tabindex="-1"><button class="x" id="x" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="#454548" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="dh"><span class="tag" id="dg"></span><span class="phs" id="ds"></span></div><h4 id="dt"></h4><p id="db"></p></div></div>
+<script>
+const PH=[['Request a return','Customer asks to return an item'],['Choose a method','A return method is selected for the order'],['Pack and hand over','The item leaves the customer'],['In transit','The carrier moves the item to Dell'],['Inspection','The item is received and checked'],['Refund','Money goes back to the customer']];
+const EV=[[['Dell.com return page','Dell.com return page','The online return form on Dell.com, reached from order history or a support link.']],
+[['Method options','Return method options','Pickup, drop-off or online return, shown with the timeline each one implies.']],
+[['Shipping label','Shipping label and box code','A printable label plus the box code that tells the carrier how to handle the unit.']],
+[['Tracking email','Tracking email','A carrier tracking number sent by email, not inside any Dell system.']],
+[['Status email','Inspection status email','A message confirming the item arrived, sent manually by the agent.']],
+[['Credit note','Credit note','The refund confirmation the customer receives once finance has processed it.']]];
+const CA=[[['Reports the issue','Reports the issue','The customer explains what is wrong with the product and asks to return it.'],['Shares order number','Shares the order number','The order number is read out or typed into the form so the agent can find the order.']],
+[['Picks a method','Picks a return method','The customer chooses pickup, drop-off or an online return, without a clear view of the timeline each one implies.']],
+[['Packs the item','Packs the item','The customer packs the unit and attaches the label, following instructions from the email.'],['Hands to courier','Hands it to the courier','The unit is collected at the door or dropped at a carrier point.']],
+[['Waits','Waits and checks','With no status inside Dell, the customer refreshes the carrier tracking page and emails the agent.'],['Chases the agent','Chases the agent','After a few days with no update, the customer contacts support again.']],
+[['Waits again','Waits for the outcome','The customer cannot see inspection progress and does not know when the refund starts.']],
+[['Receives refund','Receives the refund','The credit lands, often later than the customer expected.']]];
+const FS=[[['Agent takes the call','Care agent takes the request','The agent captures the issue by phone, chat or email and opens a case.'],['Verifies identity','Verifies the customer','Identity and entitlement are checked against the account and order history.']],
+[['Explains options','Explains the options','The agent describes pickup, drop-off and online return, using local knowledge rather than a rule in the system.'],['Confirms policy','Confirms policy fit','Eligibility is checked from memory and from the policy document.']],
+[['Sends instructions','Sends packing instructions','The agent emails the label, box code and packing steps.']],
+[['Books the carrier','Books the carrier','The agent re-types the order data into the carrier portal, because the two systems do not talk.'],['Answers chasers','Answers chase-ups','Every status question is answered by hand, one customer at a time.']],
+[['Relays the outcome','Relays the inspection outcome','The agent reads the facility note and emails the customer.']],
+[['Confirms credit','Confirms the credit','The agent tells the customer the refund has been processed.']]];
+const BS=[[['Case created in SFDC','Case created in Salesforce','A CRE case is opened and the issue is recorded against the order.']],
+[['Order pulled from SODS','Order pulled from SODS','Order, invoice and segment details are fetched so the return can be priced.'],['Manual eligibility check','Manual eligibility check','A person decides whether the request is inside policy; nothing is automated.']],
+[['Label generated','Label generated','The label and box code are produced from product data.']],
+[['Carrier portal entry','Carrier portal entry','Order details are keyed into the carrier portal by hand, one request at a time.'],['No status writeback','No status write-back','Carrier status never returns to Dell, so no system holds the truth.']],
+[['Facility inspection','Facility inspection','The returns facility checks condition and grade, then records the result locally.'],['Finance approval','Finance approval','A finance approver signs off before any money can move.']],
+[['Refund processed','Refund processed','Finance issues the credit and the case is closed.']]];
+const SP=[[['Salesforce','Salesforce','Holds the case, the customer record and the conversation history.']],
+[['SODS · policy doc','SODS and the policy document','Order data lives in SODS; the policy rules live in a document a person has to read.']],
+[['PDSL','PDSL','Supplies box code and weight so the right label can be produced.']],
+[['Carrier portal · email','Carrier portal and email','Booking happens in a carrier portal or over email, outside any Dell system.']],
+[['Returns facility · OMEGA','Returns facility and OMEGA','The facility records the inspection; OMEGA holds the finance side of the decision.']],
+[['Oracle payments','Oracle payment portal','Pays the refund out to the customer.']]];
+const RI={ev:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 21h8"/>',ca:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',fs:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',bs:'<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7.5h.01M7 17h.01"/>',sp:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 14a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.1a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-3-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4 14H3.9a2 2 0 1 1 0-4H4a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 11 4.1V4a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 18 5.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.1 3h.1a2 2 0 1 1 0 4H22a1.7 1.7 0 0 0-1.6 1z"/>'};
+const ic=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${RI[k]}</svg>`;
+const esc=s=>s.replace(/"/g,'&quot;');
+const cell=(arr,cls,kind)=>arr.map((c,i)=>`<div class="c${i===5?' last':''}">${c.map(x=>`<button class="card ${cls}" title="${esc(x[1])}" data-k="${cls}" data-kk="${kind}" data-p="${i}" data-t="${esc(x[1])}" data-b="${esc(x[2])}">${x[0]}</button>`).join('')}</div>`).join('');
+const label=(k,t)=>`<div class="c rl">${ic(k)}${t}</div>`;
+const line=t=>`<div class="ln"><em>${t}</em><hr></div>`;
+let h='<div class="c hd corner"></div>'+PH.map((p,i)=>`<div class="c hd${i===5?' last':''}" title="${esc(p[1])}"><span class="num">${i+1}</span><b>${p[0]}</b></div>`).join('');
+h+=label('ev','Physical evidence')+cell(EV,'ev','Evidence');
+h+=label('ca','Customer actions')+cell(CA,'','Customer action');
+h+=line('Line of interaction');
+h+=label('fs','Frontstage')+cell(FS,'fs','Frontstage');
+h+=line('Line of visibility');
+h+=label('bs','Backstage')+cell(BS,'bs','Backstage');
+h+=line('Line of internal interaction');
+h+=label('sp','Support systems')+cell(SP,'sp','Support system');
+const bp=document.getElementById('bp');bp.innerHTML=h;
+const sc=document.getElementById('scrim');let last=null;
+function open(kind,cls,phase,t,b){last=document.activeElement;const g=document.getElementById('dg');g.textContent=kind;g.className='tag '+(cls||'');
+ document.getElementById('ds').textContent=phase;document.getElementById('dt').textContent=t;document.getElementById('db').textContent=b;
+ sc.classList.add('on');document.getElementById('dlg').focus()}
+function close(){sc.classList.remove('on');if(last&&last.focus)last.focus()}
+bp.addEventListener('click',e=>{const c=e.target.closest('.card');if(!c)return;const p=+c.dataset.p;
+ open(c.dataset.kk,c.dataset.k,'Phase '+(p+1)+' · '+PH[p][0],c.dataset.t,c.dataset.b)});
+sc.addEventListener('click',e=>{if(e.target===sc)close()});
+document.getElementById('x').onclick=close;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&sc.classList.contains('on'))close()});
+</script></body></html>

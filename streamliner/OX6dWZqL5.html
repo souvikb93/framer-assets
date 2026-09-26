@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@font-face{font-family:'Uncut Sans';src:url(https://cdn.jsdelivr.net/gh/kaspernordkvist/uncut_sans@b3b42467781e3bd98c68f2d70eba325196e7d9c5/Webfonts/UncutSans-Variable.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
+:root{--t-display:40px;--t-title-lg:24px;--t-title:18px;--t-body:14px;--t-caption:12px;--t-micro:10px;--r-surface:24px;--r-card:16px;--r-inner:12px;--r-node:8px;--r-xs:4px;--r-pill:999px}
+@media (max-width:1023px){:root{--t-display:30px;--t-title-lg:18px;--t-title:16px}}
+@media (max-width:767px){:root{--t-display:22px;--t-title-lg:16px;--t-title:15px}}
+
+:root{--ink:#121212;--ink2:#454548;--ink3:#696970;--line:#E9E9EC;--line2:#D9D9DE;--brand:#0672CB;--deep:#06356E;--green:#1E8A4C;--green-dot:#3DDC84}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100%;overflow:hidden;background:transparent;font-family:'Uncut Sans',-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+body{display:block!important}
+.app{width:100vw;max-width:1200px;padding:2px;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;padding:2px}
+.pick{flex:none;display:inline-flex;align-items:center;justify-content:center;background:#EFEFF1;padding:2px;border-radius:var(--r-node)}
+.opt{font:inherit;position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:var(--r-node);border:0;background:transparent;cursor:pointer;color:rgba(113,113,122,.7);font-size:var(--t-body);font-weight:500;white-space:nowrap;transition:all .2s}
+.opt i{display:none;width:7px;height:7px;border-radius:50%;background:#D9D9DE;flex:none;transition:background .3s,transform .3s}
+.opt:hover{color:#71717A}
+.opt.on{color:#09090B;font-weight:600}
+.opt.on i{background:var(--green-dot);transform:scale(1.15);animation:bl 1.3s ease-in-out infinite;box-shadow:0 0 0 0 rgba(61,220,132,.5)}
+@keyframes bl{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(61,220,132,.45)}50%{opacity:.4;box-shadow:0 0 0 4px rgba(61,220,132,0)}}
+.opt:focus-visible{outline:2px solid rgba(161,161,170,.7);outline-offset:2px}
+.pill{position:absolute;top:2px;left:2px;height:32px;border-radius:var(--r-node);background:#fff;border:1px solid #E1E1E5;box-shadow:0 1px 2px 0 rgba(18,18,18,.06);z-index:0;transition:transform .42s cubic-bezier(.34,1.24,.5,1),width .42s cubic-bezier(.34,1.24,.5,1)}
+.pick{position:relative}.opt{z-index:1}
+.canvas{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:24px;box-shadow:0 1px 2px rgba(18,18,18,.03)}
+svg.map{display:block;width:100%;height:auto;overflow:visible}
+.lab{font-family:'Uncut Sans';pointer-events:none;user-select:none}
+.steps{margin-top:24px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-wrap:nowrap;align-items:flex-start;min-height:56px}
+.s{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 7px;font-size:var(--t-micro);font-weight:500;line-height:1.15;color:var(--ink3);white-space:nowrap;text-align:center;transition:color .3s}
+.s .dot{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid #C9C9CE;background:#fff;display:grid;place-items:center;transition:all .3s}
+.s.done{color:var(--ink2)}
+.s.done .dot{background:var(--green);border-color:var(--green)}
+.s.done .dot::after{content:"";width:7px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.s.now{color:var(--green);font-weight:600}
+.s.now .dot{border-color:var(--green);border-width:2.5px;background:#fff}
+.s.now .dot::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{50%{transform:scale(.5);opacity:.6}}
+.sep{position:relative;overflow:hidden;flex:1 1 0;min-width:8px;height:2px;background:var(--line2);margin:9px 0 0;border-radius:var(--r-xs)}
+.sep::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--f,0%);background:var(--green);border-radius:var(--r-xs)}
+@media (max-width:1100px){.s{font-size:var(--t-micro);padding:0 9px 0 7px;gap:6px}.s .dot{width:13px;height:13px}.sep{margin:0 3px}}
+@media (min-width:900px){body{min-height:674px}}
+@media (max-width:760px){.top{flex-direction:column;align-items:stretch;gap:16px}.pick{align-self:stretch;overflow-x:auto;justify-content:flex-start}.canvas{overflow-x:auto;-webkit-overflow-scrolling:touch}.canvas>.map{width:900px;min-width:900px}.steps{min-width:1000px;min-height:52px}}
+@media (max-width:440px){.opt{height:36px}.canvas{padding:16px}}
+@media (prefers-reduced-motion:reduce){.s.now .dot::after{animation:none}.pill{transition:none}.opt.on i{animation:none}}
+</style></head><body>
+<div class="app">
+ <div class="top">
+  <div class="pick" id="pick" role="tablist" aria-label="Request type"><span class="pill" id="pill"></span></div>
+ </div>
+ <div class="canvas">
+  <svg class="map" id="svg" viewBox="0 0 1372 635" role="img" aria-label="Streamliner to-be system: a request moves from the customer through channels, Salesforce, the five Streamliner modules and the enterprise systems, and back to the customer"></svg>
+  <div class="steps" id="steps"></div>
+ </div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg',svg=document.getElementById('svg');
+const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+const DEEP='#06356E',GREEN='#1E8A4C';
+ const PAL={mod:'#0672CB',crm:'#7C3AED',ppl:'#57575C',data:'#B02071',log:'#A15C00',fin:'#0B6E4F'};
+ const GRP={ce:'mod',vr:'mod',rm:'mod',pt:'mod',dr:'mod',sfdc:'crm',cust:'ppl',ch:'ppl',agent:'ppl',es:'ppl',bil:'data',pdsl:'data',delta:'data',arb:'log',log:'log',otm:'log',ab:'fin',om:'fin',pay:'fin'};
+ const CO=id=>PAL[GRP[id]]||DEEP;
+const MIX=(hex,a)=>{const n=parseInt(hex.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255,m=v=>Math.round(v*a+255*(1-a));return '#'+((1<<24)+(m(r)<<16)+(m(g)<<8)+m(b)).toString(16).slice(1)};
+const NEU='#D9D9DE',NEUT='#454548';
+const ACT={user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3.4-7.5 7.5-7.5s7.5 3.3 7.5 7.5"/>',head:'<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="1.5" y="13" width="5" height="8" rx="2.5"/><rect x="17.5" y="13" width="5" height="8" rx="2.5"/><path d="M20 21a4 4 0 0 1-4 3.5h-2.5"/>'};
+const M=362,W=124;
+const N={
+ cust:{x:54,y:M,r:40,t:'Customer',k:'p',ico:'user'},
+ ch:{x:188,y:M,w:34,h:88,k:'p',ch:1},
+ es:{x:322,y:258,w:W,t:'E-support',k:'p'},
+ agent:{x:322,y:M,r:40,t:'Care agent',k:'p',ico:'head'},
+ sfdc:{x:501,y:M,w:W,t:'SFDC',k:'s'},
+ ce:{x:702,y:M,w:W,t:'Create & Edit',k:'m'},
+ dr:{x:702,y:166,w:W,h:46,t:'Disposition',t2:'& Recovery',k:'m'},
+ vr:{x:903,y:M,w:W,t:'Verify & Review',k:'m'},
+ pt:{x:1104,y:M,w:W,t:'Process & Track',k:'m'},
+ rm:{x:903,y:468,w:W,t:'Return Method',k:'m'},
+ bil:{x:702,y:560,w:W,t:'BIL / SODS',k:'s'},
+ pdsl:{x:1104,y:560,w:100,t:'PDSL',k:'s'},
+ delta:{x:1268,y:468,w:W,t:'Delta · RIMS',k:'s'},
+ otm:{x:1268,y:560,w:100,t:'OTM',k:'s'},
+ ab:{x:903,y:166,w:W,t:'ABACUS',k:'s'},
+ om:{x:1104,y:166,w:W,t:'OMEGA',k:'s'},
+ pay:{x:1268,y:166,w:W,t:'Oracle payments',k:'s'},
+ arb:{x:1104,y:72,w:W,t:'ARB facility',k:'s'},
+ log:{x:1268,y:72,w:W,t:'Logistics',k:'p'}};
+for(const id in N){const n=N[id];if(!n.r&&!n.h)n.h=38;n.col=CO(id);n.tint=MIX(n.col,.06)}
+const P=(id,s)=>{const n=N[id];if(n.r)return s==='t'?[n.x,n.y-n.r]:s==='b'?[n.x,n.y+n.r]:s==='l'?[n.x-n.r,n.y]:[n.x+n.r,n.y];
+ return s==='t'?[n.x,n.y-n.h/2]:s==='b'?[n.x,n.y+n.h/2]:s==='l'?[n.x-n.w/2,n.y]:[n.x+n.w/2,n.y]};
+const RET=[[1358,621],[54,621]];
+const E={
+ 'cust-ch':[P('cust','r'),P('ch','l')],'ch-agent':[P('ch','r'),P('agent','l')],
+ 'agent-sfdc':[P('agent','r'),P('sfdc','l')],'sfdc-ce':[P('sfdc','r'),P('ce','l')],
+ 'ce-vr':[P('ce','r'),P('vr','l')],'vr-pt':[P('vr','r'),P('pt','l')],
+ 'cust-es':[P('cust','t'),[54,258],P('es','l')],
+ 'es-ce':[P('es','r'),[702,258],P('ce','t')],
+ 'ce-dr':[P('ce','t'),P('dr','b')],
+ 'ce-bil':[P('ce','b'),P('bil','t')],
+ 'ce-pt':[P('ce','t'),[702,322],[1104,322],P('pt','t')],
+ 'dr-pt':[P('dr','r'),[802,166],[802,250],[1104,250],P('pt','t')],
+ 'pt-ab':[P('pt','t'),[1104,286],[903,286],P('ab','b')],
+ 'dr-arb':[P('dr','t'),[702,72],P('arb','l')],
+ 'arb-log':[P('arb','r'),P('log','l')],
+ 'ab-om':[P('ab','r'),P('om','l')],'om-pay':[P('om','r'),P('pay','l')],
+ 'pay-cust':[P('pay','r'),[1358,166],...RET,P('cust','b')],
+ 'log-cust':[P('log','r'),[1358,72],...RET,P('cust','b')],
+ 'log-otm':[P('log','r'),[1344,72],[1344,560],P('otm','r')],
+ 'vr-rm':[P('vr','b'),P('rm','t')],
+ 'pt-rm':[P('pt','b'),[1104,424],[903,424],P('rm','t')],
+ 'pt-delta':[P('pt','r'),[1192,M],[1192,468],P('delta','l')],
+ 'rm-bil':[P('rm','l'),[790,468],[790,560],P('bil','r')],
+ 'rm-pdsl':[P('rm','r'),[1010,468],[1010,560],P('pdsl','l')],
+ 'rm-otm':[P('rm','r'),[1180,468],[1180,560],P('otm','l')]};
+const HOPS={};
+function rpath(p,hop,r=18){let d=`M${p[0][0]},${p[0][1]}`,prev=p[0];
+ const seg=(a,b)=>{if(hop){const hz=a[1]===b[1]&&hop[1]===a[1]&&(hop[0]-a[0])*(hop[0]-b[0])<0;
+  if(hz){const dir=Math.sign(b[0]-a[0]),hr=7;d+=` L${hop[0]-dir*hr},${a[1]} A${hr},${hr} 0 0 ${dir>0?1:0} ${hop[0]+dir*hr},${a[1]}`}}
+  d+=` L${b[0]},${b[1]}`};
+ for(let i=1;i<p.length-1;i++){const a=prev,b=p[i],c=p[i+1];
+  const l1=Math.hypot(b[0]-p[i-1][0],b[1]-p[i-1][1]),l2=Math.hypot(c[0]-b[0],c[1]-b[1]),rr=Math.min(r,l1/2,l2/2);
+  const s=[b[0]-(b[0]-p[i-1][0])/l1*rr,b[1]-(b[1]-p[i-1][1])/l1*rr],e=[b[0]+(c[0]-b[0])/l2*rr,b[1]+(c[1]-b[1])/l2*rr];
+  seg(a,s);d+=` Q${b[0]},${b[1]} ${e[0]},${e[1]}`;prev=e}
+ seg(prev,p[p.length-1]);return d}
+const defs=mk('defs',{});
+defs.innerHTML='<filter id="lift" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#121212" flood-opacity="0.10"/></filter>'
+ +'<linearGradient id="flowg" gradientUnits="userSpaceOnUse"><stop id="gs0" offset="0"/><stop id="gs1" offset="1"/></linearGradient>'
+ +'<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#121212" flood-opacity="0.07"/></filter>';
+const LEG=mk('g',{});
+const edgeLayer=mk('g',{}),EL={};
+for(const k in E)EL[k]=mk('path',{d:rpath(E[k],HOPS[k]),fill:'none',stroke:NEU,'stroke-width':1.5,'stroke-linecap':'round','stroke-linejoin':'round',style:'transition:stroke .45s,opacity .45s'},edgeLayer);
+const trail=mk('g',{}),flow=mk('g',{}),tokLayer=mk('g',{}),nodeLayer=mk('g',{});
+const G={},GI={};
+const txt=(x,y,s,size,g,w,fill,anchor)=>{const t=mk('text',{x,y,'text-anchor':anchor||'middle',class:'lab','font-size':size,'font-weight':w,fill,'letter-spacing':'-0.01em'},g);t.textContent=s;return t};
+for(const id in N){const n=N[id],g=mk('g',{},nodeLayer),inner=mk('g',{},g);G[id]=g;GI[id]=inner;
+ n.sc=1;n.vel=0;n.target=1;
+ const col=CO(id);
+ if(n.r){n.shape=mk('circle',{cx:n.x,cy:n.y,r:n.r,fill:'#fff',stroke:col,'stroke-opacity':.45,'stroke-width':1.5,filter:'url(#soft)',style:'transition:stroke .4s,stroke-opacity .4s'},inner);
+  const ic=mk('g',{transform:`translate(${n.x-13.2},${n.y-28}) scale(1.1)`,fill:'none',stroke:col,'stroke-width':1.9,'stroke-linecap':'round','stroke-linejoin':'round',style:'transition:stroke .4s'},inner);n.ic=ic;
+  ic.innerHTML=ACT[n.ico||'user'];
+  n.txt=[txt(n.x,n.y+18,n.t,11,inner,600,col)];
+ }else{
+  n.shape=mk('rect',{x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:n.ch?17:11,
+   fill:'#fff',stroke:col,'stroke-opacity':.45,'stroke-width':1.5,filter:'url(#soft)',
+   style:'transition:fill .4s,stroke .4s,stroke-opacity .4s'},inner);
+  if(n.ch){['M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2','M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.3-4.6A8.4 8.4 0 1 1 21 11.5z','M3 6h18v12H3zM3 7l9 6 9-6'].forEach((d,i)=>{
+   const gg=mk('g',{transform:`translate(${n.x-6.5},${n.y-32+i*24}) scale(.55)`,fill:'none',stroke:col,'stroke-width':2.4,'stroke-linejoin':'round',style:'transition:stroke .4s'},inner);mk('path',{d},gg);if(!n.icg)n.icg=[];n.icg.push(gg)})}
+  else{const lines=n.t2?[n.t,n.t2]:[n.t];
+   n.txt=lines.map((l,i)=>txt(n.x,n.y+4+(i-(lines.length-1)/2)*15,l,12,inner,600,col))}}
+ const w=n.r?n.r*2:n.w,h=n.r?n.r*2:n.h,x0=n.x-w/2,y0=n.y-h/2;
+ const cp=mk('clipPath',{id:'cw_'+id},defs);
+ n.wipe=mk('rect',{x:x0,y:y0,width:0,height:h},cp);
+ n.fillShape=n.r?mk('circle',{cx:n.x,cy:n.y,r:n.r,fill:n.tint,'clip-path':`url(#cw_${id})`},inner)
+  :mk('rect',{x:x0,y:y0,width:n.w,height:n.h,rx:n.ch?17:11,fill:n.tint,'clip-path':`url(#cw_${id})`},inner);
+ n.shape.parentNode.insertBefore(n.fillShape,n.shape.nextSibling);
+ n.wipeW=w;
+}
+function nodeState(id,s,p){const n=N[id],sh=n.shape,col=CO(id);
+ const q=s==='work'?(p||0):0;
+ sh.setAttribute('stroke',col);
+ sh.setAttribute('stroke-width',s==='idle'?1.4:s==='done'?2.2:(1.4+.8*q).toFixed(2));
+ sh.setAttribute('fill','#fff');sh.setAttribute('fill-opacity',1);
+ sh.setAttribute('stroke-opacity',s==='idle'?.45:1);
+ sh.setAttribute('filter',s==='work'?'url(#lift)':'url(#soft)');
+ n.wipe.setAttribute('width',s==='done'?n.wipeW:s==='work'?(n.wipeW*(p||0)).toFixed(1):0);
+ n.target=s==='work'?1.3:1;
+ if(s==='work')nodeLayer.appendChild(G[id])}
+const ICON={doc:'<path d="M6 2h8l4 4v14H6z"/><path d="M14 2v4h4M9 11h6M9 15h6"/>',ok:'<path d="M5 12l5 5 9-10"/>',
+ box:'<path d="M20 8l-8-4-8 4v8l8 4 8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>',card:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>',
+ gift:'<rect x="4" y="9" width="16" height="11" rx="1"/><path d="M3 9h18M12 9v11M12 9c-2-4-6-4-6-1s6 1 6 1 6 2 6-1-4-3-6 1"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8" r="1.5"/>'};
+const LGC=[['mod','Streamliner'],['crm','Case system'],['ppl','People'],['data','Data'],['log','Logistics'],['fin','Finance']];
+const LGI=[['doc','Request'],['ok','Approval'],['box','Package'],['card','Payment'],['gift','Replacement'],['tag','Return label']];
+mk('rect',{x:14,y:14,width:236,height:158,rx:14,fill:'#fff',stroke:'#E9E9EC','stroke-width':1},LEG);
+LGC.forEach((r,i)=>{const y=42+i*23;
+ mk('rect',{x:30,y:y-8,width:9,height:9,rx:3,fill:PAL[r[0]]},LEG);
+ txt(45,y,r[1],11,LEG,500,'#454548','start')});
+LGI.forEach((r,i)=>{const y=42+i*23;
+ const gi=mk('g',{transform:`translate(146,${y-12}) scale(.6)`,fill:'none',stroke:'#454548','stroke-width':2.2,'stroke-linecap':'round','stroke-linejoin':'round'},LEG);
+ gi.innerHTML=ICON[r[0]];
+ txt(165,y,r[1],11,LEG,500,'#454548','start')});
+const halo=mk('circle',{r:22,fill:DEEP,opacity:0},tokLayer);
+const tok=mk('g',{},tokLayer);
+const tokBg=mk('circle',{r:13,fill:DEEP,stroke:'#fff','stroke-width':2.5,filter:'url(#lift)'},tok);
+const tokIcon=mk('g',{transform:'translate(-6.5,-6.5) scale(.54)',fill:'none',stroke:'#fff','stroke-width':2.8,'stroke-linecap':'round','stroke-linejoin':'round'},tok);
+const NAME={cust:'Customer',ch:'Channels',es:'E-support',agent:'Care agent',sfdc:'SFDC',ce:'Create & Edit',bil:'BIL / SODS',vr:'Verify & Review',dr:'Disposition & Recovery',pt:'Process & Track',rm:'Return Method',pdsl:'PDSL',delta:'Delta · RIMS',otm:'OTM',ab:'ABACUS',om:'OMEGA',pay:'Oracle payment portal',arb:'ARB facility',log:'Logistics'};
+const F={  credit:[   ['cust','Customer has a billing issue','Request raised','','doc'],   ['ch','Contacts Dell by phone, chat or email','Routed to an agent','','doc'],   ['agent','Care agent listens and finds the order','Issue captured','Issue Reported','doc'],   ['sfdc','Searching the order, deciding the resolution','Case created','Case Created','doc'],   ['ce','Opening the credit canvas from the case','Canvas open','','doc'],   ['bil','Fetching order details from SODS','Order details returned','','doc'],   ['ce','Validating policy, raising the credit request','CRE raised with case ID','Credit Raised','doc'],   ['vr','Business rules: policy period, CRE history, price match','Approved','Credit Approved','ok'],   ['pt','Reading the approval, building the credit payload','Payload ready','Credit Prepared','ok'],   ['ab','Requesting the credit note from finance','Request sent to OMEGA','','card'],   ['om','Finance processing the credit amount','Credit paid','Credit Paid','card'],   ['ab','Returning the finance response','Response sent to P&T','','card'],   ['pt','Saving the result in the P&T database','Status saved','','ok'],   ['ce','Updating the credit request status','Status updated','','ok'],   ['sfdc','Notifying the care agent in Salesforce','Agent notified','Agent Notified','ok'],   ['agent','Care agent confirms the credit','Customer informed','','ok'],   ['ch','Reaching the customer','Message delivered','','card'],   ['cust','Customer receives the credit','Money back','Customer Credited','card']],  return:[   ['cust','Customer wants to return an item','Request raised','','doc'],   ['es','Starting a return on Dell.com','Online request submitted','Return Requested','doc'],   ['ce','Creating the return request','Request opened','','doc'],   ['bil','Fetching order and box code from SODS','Details returned','','doc'],   ['ce','Validating policy, creating the CRE number','CRE created','Case Created','doc'],   ['vr','Business rules decide: approve, reject or hold','Approved','Return Approved','ok'],   ['pt','Tracking the approved return','Tracking started','','ok'],   ['rm','Getting approved-request details, choosing the method','Return method set','Return Method','tag'],   ['pdsl','Providing box code and weight','Product data returned','','tag'],   ['rm','Preparing shipping details','Ready to ship','','tag'],   ['otm','Updating waybill details','Waybill ready','Shipping Arranged','tag'],   ['log','Scheduling the pickup','Pickup booked','','box'],   ['cust','Courier collects the package','Package handed over','Package Collected','box'],   ['log','Package in transit','Delivered to facility','','box'],   ['arb','Item dropped at the ARB facility','Item received','Item Received','box'],   ['dr','Inspecting the item, forwarding details to P&T','Inspection passed','Item Inspected','ok'],   ['pt','Recording the received item','Refund triggered','','ok'],   ['ab','Requesting the refund from finance','Request sent to OMEGA','','card'],   ['om','Finance processing the refund amount','Refunded','Refund Issued','card'],   ['pay','Sending the final refund to the Oracle global payment portal','Refund paid out','','card'],   ['cust','Refund reaches the customer','Money back','Customer Refunded','card']],  exchange:[   ['cust','Customer has a faulty product','Request raised','','doc'],   ['ch','Contacts Dell by phone, chat or email','Routed to an agent','','doc'],   ['agent','Care agent troubleshoots, agrees an exchange','Issue captured','Issue Reported','doc'],   ['sfdc','Creating a case in Salesforce','Case created','Case Created','doc'],   ['ce','Opening the exchange request','Request opened','','doc'],   ['bil','Fetching order details from SODS','Details returned','','doc'],   ['ce','Validating policy, creating the CRE number','CRE created','Exchange Created','doc'],   ['vr','Business rules decide: approve, reject or hold','Approved','Exchange Approved','ok'],   ['rm','Choosing how the faulty unit comes back','Return method set','','tag'],   ['pdsl','Providing box code and weight','Product data returned','','tag'],   ['rm','Preparing shipping details','Ready to ship','','tag'],   ['otm','Updating waybill details','Waybill ready','Shipping Arranged','tag'],   ['log','Scheduling the pickup','Pickup booked','','box'],   ['cust','Courier collects the faulty unit','Package handed over','Package Collected','box'],   ['log','Package in transit','Delivered to facility','','box'],   ['arb','Item dropped at the ARB facility','Item received','','box'],   ['dr','Inspecting the item, forwarding details to P&T','Inspection passed','Item Inspected','ok'],   ['pt','Approving the replacement','Replacement approved','','ok'],   ['delta','Creating the replacement order in Delta / RIMS','Order created','Replacement Ordered','gift'],   ['pt','Tracking the replacement','Tracking started','','gift'],   ['rm','Setting up the delivery','Delivery method set','','gift'],   ['otm','Creating the delivery waybill','Waybill ready','','gift'],   ['log','Shipping the replacement','Out for delivery','Replacement Shipped','gift'],   ['cust','Replacement reaches the customer','Delivered','Replacement Delivered','gift']] };
+const edgeOf=(a,b)=>E[a+'-'+b]?[a+'-'+b,0]:E[b+'-'+a]?[b+'-'+a,1]:null;
+const ORDER=['credit','return','exchange'];
+const PICKS=[['credit','Credit'],['return','Return'],['exchange','Exchange']];
+const SPEED=104,WORK_KEY=3.1,WORK=2.5,HOLD=1.5,END=3.6;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+$('pick').insertAdjacentHTML('beforeend',PICKS.map(p=>`<button class="opt" data-k="${p[0]}" role="tab"><i></i>${p[1]}</button>`).join(''));
+let cur,seq,i,phase,t,dur,paused=false,path=null,pathL=0,lastNow=0,dash=0,tokSc=1,tokPt=[0,0];
+function movePill(){const b=document.querySelector('.opt.on');if(!b)return;
+ const p=$('pill');p.style.width=b.offsetWidth+'px';p.style.height=b.offsetHeight+'px';
+ p.style.transform=`translate(${b.offsetLeft-p.offsetLeft}px,${b.offsetTop-p.offsetTop}px)`}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(movePill);
+window.addEventListener('resize',movePill);
+function milestones(){return seq.map((s,j)=>({s,j})).filter(o=>o.s[3])}
+function renderSteps(){const ms=milestones();
+ $('steps').innerHTML=ms.map((o,k)=>`${k?'<span class="sep" data-j="'+o.j+'" data-p="'+ms[k-1].j+'"></span>':''}<span class="s" data-j="${o.j}"><span class="dot"></span><span class="lb">${o.s[3].replace(' ','<br>')}</span></span>`).join('')}
+function paintSeps(){const q=Math.min(1,dur?t/dur:1);
+ const pos=phase==='move'?(i-1)+q:i;
+ $('steps').querySelectorAll('.sep').forEach(el=>{const j=+el.dataset.j,jp=+el.dataset.p;
+  const f=Math.max(0,Math.min(1,(pos-jp)/(j-jp)));
+  el.style.setProperty('--f',(f*100).toFixed(1)+'%')})}
+function markSteps(){const fin=j=>j<i||(j===i&&(phase==='done'||phase==='end'));
+ $('steps').querySelectorAll('.s').forEach(el=>{const j=+el.dataset.j,d=fin(j),now=!d&&j===i&&(phase==='work'||phase==='move'||phase==='land');
+  el.classList.toggle('done',d);el.classList.toggle('now',now);});
+ paintSeps()}
+function focusRoute(){const ue=new Set(),un=new Set(seq.map(s=>s[0]));
+ for(let j=1;j<seq.length;j++)ue.add(edgeOf(seq[j-1][0],seq[j][0])[0]);
+ for(const k in EL){const u=ue.has(k);EL[k].setAttribute('stroke',u?'#C6C8CD':'#D9D9DE');EL[k].setAttribute('opacity',u?1:.34)}
+ for(const id in G)G[id].style.opacity=un.has(id)?1:.34}
+function placeTok(pt){tokPt=pt;tok.setAttribute('transform',`translate(${pt[0]},${pt[1]}) scale(${tokSc})`);halo.setAttribute('cx',pt[0]);halo.setAttribute('cy',pt[1])}
+function showTok(v){tokSc=1;placeTok(tokPt);tok.setAttribute('opacity',v?1:0);if(!v)halo.setAttribute('opacity',0)}
+function start(k){cur=k;seq=F[k];i=0;trail.innerHTML='';flow.innerHTML='';
+ document.querySelectorAll('.opt').forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+ movePill();
+ for(const id in N)nodeState(id,'idle');focusRoute();renderSteps();
+ tokIcon.innerHTML=ICON[seq[0][4]];placeTok([N.cust.x,N.cust.y]);showTok(false);
+ phase='done';t=0;dur=reduce?.01:.45;nodeState('cust','idle');markSteps()}
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+function next(){if(i>=seq.length-1){phase='end';t=0;dur=END;markSteps();return}
+ const [ek,rev]=edgeOf(seq[i][0],seq[i+1][0]),a=N[seq[i][0]],b=N[seq[i+1][0]];
+ const pts=[[a.x,a.y],...(rev?E[ek].slice().reverse():E[ek]),[b.x,b.y]],d=rpath(pts,HOPS[ek]);
+ const from=CO(seq[i][0]),col=CO(seq[i+1][0]);
+ const g=document.getElementById('flowg');
+ g.setAttribute('x1',pts[0][0]);g.setAttribute('y1',pts[0][1]);
+ g.setAttribute('x2',pts[pts.length-1][0]);g.setAttribute('y2',pts[pts.length-1][1]);
+ document.getElementById('gs0').setAttribute('stop-color',from);
+ document.getElementById('gs1').setAttribute('stop-color',col);
+ path=mk('path',{d,fill:'none',stroke:'url(#flowg)','stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'},trail);
+ flow.innerHTML='';mk('path',{d,fill:'none',stroke:'url(#flowg)','stroke-width':2.6,'stroke-linecap':'round',opacity:.35,'stroke-dasharray':'1 13'},flow);
+ tokBg.setAttribute('fill',col);halo.setAttribute('fill',col);
+ pathL=path.getTotalLength();path.style.strokeDasharray=`${pathL} ${pathL}`;path.style.strokeDashoffset=pathL;
+ i++;phase='move';t=0;dur=reduce?.01:Math.max(1.5,pathL/SPEED);
+ tokIcon.innerHTML=ICON[seq[i][4]];placeTok(pts[0]);showTok(true);markSteps()}
+function frame(now){const dt=Math.min(.05,(now-(lastNow||now))/1000);lastNow=now;
+ for(const id in N){const n=N[id];
+  if(reduce){n.sc=n.target}
+  else{const k=150,c=2*Math.sqrt(k)*.78;n.vel+=((n.target-n.sc)*k-n.vel*c)*dt;n.sc+=n.vel*dt}
+  if(Math.abs(n.sc-1)>0.0015){const cx=n.x,cy=n.y;GI[id].setAttribute('transform',`translate(${cx},${cy}) scale(${n.sc.toFixed(4)}) translate(${-cx},${-cy})`)}
+  else GI[id].removeAttribute('transform')}
+ if(!paused&&seq){t+=dt;const p=Math.min(1,t/dur),id=seq[i][0];
+  if(phase==='move'){const d=pathL*ease(p),q=path.getPointAtLength(d);placeTok([q.x,q.y]);path.style.strokeDashoffset=pathL-d;
+   dash=(dash-dt*46)%14;flow.firstChild&&flow.firstChild.setAttribute('stroke-dashoffset',dash);
+   halo.setAttribute('opacity',(.14*Math.sin(t*6)+.16).toFixed(3));
+   halo.setAttribute('r',(20+3*Math.sin(t*6)).toFixed(2));
+   if(p>=1){phase='land';t=0;dur=reduce?.01:.3;N[id].target=1.3;tok.setAttribute('opacity',1)}}
+  else if(phase==='land'){const u=p;
+   tokSc=Math.max(0,u<.32?1+.34*(u/.32):1.34*(1-ease((u-.32)/.68)));placeTok(tokPt);
+   tok.setAttribute('opacity',u<.58?1:Math.max(0,1-(u-.58)/.42).toFixed(3));
+   halo.setAttribute('opacity',(.3*(1-u)).toFixed(3));halo.setAttribute('r',(12+26*u).toFixed(1));
+   if(p>=1){showTok(false);phase='work';t=0;dur=seq[i][3]?WORK_KEY:WORK;nodeState(id,'work',0);markSteps()}}
+  else if(phase==='work'){nodeState(id,'work',p);
+   halo.setAttribute('opacity',0);
+   if(p>=1){phase='done';t=0;dur=HOLD;nodeState(id,'done');
+    if(path){path.setAttribute('stroke',GREEN);path.setAttribute('stroke-opacity',.55);path.setAttribute('stroke-width',2)}
+    flow.innerHTML='';markSteps()}}
+  else if(phase==='done'){if(p>=1)next()}
+  else if(phase==='end'){if(p>=1)start(ORDER[(ORDER.indexOf(cur)+1)%3])}
+  paintSeps()}
+ requestAnimationFrame(frame)}
+$('pick').onclick=e=>{const b=e.target.closest('.opt');if(b)start(b.dataset.k)};
+addEventListener('resize',()=>{movePill()});
+document.addEventListener('visibilitychange',()=>{paused=document.hidden});
+start('credit');requestAnimationFrame(frame);
+if(document.fonts)document.fonts.ready.then(movePill);
+ if(window.ResizeObserver)new ResizeObserver(movePill).observe($('pick')); </script></body></html>

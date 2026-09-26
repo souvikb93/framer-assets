@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@font-face{font-family:'Uncut Sans';src:url(https://cdn.jsdelivr.net/gh/kaspernordkvist/uncut_sans@b3b42467781e3bd98c68f2d70eba325196e7d9c5/Webfonts/UncutSans-Variable.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
+:root{--t-display:40px;--t-title-lg:24px;--t-title:18px;--t-body:14px;--t-caption:12px;--t-micro:10px;--r-surface:24px;--r-card:16px;--r-inner:12px;--r-node:8px;--r-xs:4px;--r-pill:999px}
+@media (max-width:1023px){:root{--t-display:30px;--t-title-lg:18px;--t-title:16px}}
+@media (max-width:767px){:root{--t-display:22px;--t-title-lg:16px;--t-title:15px}}
+
+:root{--ink:#121212;--ink2:#454548;--ink3:#696970;--line:#E9E9EC;--line2:#D9D9DE;--brand:#0672CB;--deep:#06356E;--green:#1E8A4C}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100%;overflow:hidden;background:transparent;font-family:'Uncut Sans',-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+body{display:block!important}
+.app{width:100vw;max-width:1200px;padding:2px;display:flex;flex-direction:column}
+.canvas{background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:24px;box-shadow:0 1px 2px rgba(18,18,18,.03)}
+.grid{position:relative;display:grid;grid-template-columns:190px minmax(0,1fr);cursor:crosshair}
+.spacer{grid-column:1;height:26px;border-bottom:1px solid var(--line)}
+.axis{grid-column:2;position:relative;height:26px;border-bottom:1px solid var(--line)}
+.mo{position:absolute;top:3px;font-size:var(--t-micro);font-weight:600;color:var(--ink3);padding-left:7px;border-left:1px solid var(--line);height:20px}
+.mo.q{border-left-color:var(--line2);color:var(--ink2)}
+.ghead{grid-column:1/3;font-size:var(--t-body);font-weight:600;letter-spacing:-.015em;color:var(--ink);padding:22px 0 10px;border-top:1px solid var(--line)}
+.ghead.first{border-top:0;padding-top:14px}
+.rl{grid-column:1;display:flex;flex-direction:column;justify-content:center;height:39px;padding-right:16px}
+.rl b{font-size:var(--t-micro);font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl span{font-size:var(--t-micro);font-weight:500;color:var(--ink3);line-height:1.2;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{grid-column:2;position:relative;height:39px;border-top:1px solid #F4F4F6}
+.bar{position:absolute;height:22px;top:50%;transform:translateY(-50%);border-radius:var(--r-node);display:flex;align-items:center;justify-content:center;
+ font-size:var(--t-micro);font-weight:600;white-space:nowrap;overflow:hidden;
+ background:var(--tint);border:1px solid var(--c);color:var(--c);
+ transition:opacity .3s,box-shadow .25s}
+.bar.dash{border-style:dashed;font-size:var(--t-micro)}
+.bar.on{box-shadow:0 2px 7px rgba(18,18,18,.18)}
+.bar.hov{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--c)}
+.head{position:absolute;top:26px;bottom:0;width:2px;background:var(--brand);opacity:.5;pointer-events:none;z-index:3;transition:opacity .2s}
+.head::before{content:"";position:absolute;top:-5px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.tp{display:grid;grid-template-columns:190px minmax(0,1fr);align-items:center;margin-top:18px}
+.ppwrap{grid-column:1;display:flex;justify-content:flex-end;padding-right:16px}
+.pp{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:var(--ink2);display:grid;place-items:center;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.pp:hover{border-color:var(--ink3);color:var(--ink)}
+.pp:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.rail{grid-column:2;position:relative;height:30px;display:flex;align-items:center;cursor:pointer}
+.rail::before{content:"";position:absolute;left:0;right:0;height:3px;border-radius:var(--r-xs);background:var(--line)}
+.rfill{position:absolute;left:0;height:3px;border-radius:var(--r-xs);background:var(--brand);opacity:.55}
+.knob{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;border:2.5px solid var(--brand);transform:translateX(-50%);box-shadow:0 1px 3px rgba(18,18,18,.18)}
+.rail.off .rfill{opacity:.2}
+.rail.off .knob{border-color:var(--line2)}
+.foot{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--line);min-height:40px}
+.now{font-size:var(--t-micro);font-weight:600;color:var(--ink3);flex:none;width:96px}
+.act{font-size:var(--t-caption);color:var(--ink2);line-height:1.35;min-height:17px}
+.act b{font-weight:600;color:var(--ink)}
+@media (max-width:760px){.canvas{overflow-x:auto;-webkit-overflow-scrolling:touch}.grid,.tp,.foot{min-width:880px}}
+@media (max-width:440px){.canvas{padding:16px}}
+@media (min-width:900px){body{min-height:744px}}
+@media (prefers-reduced-motion:reduce){.bar,.head{transition:none}}
+</style></head><body>
+<div class="app">
+ <div class="canvas">
+  <div class="grid" id="grid"></div>
+  <div class="tp">
+   <div class="ppwrap"><button class="pp" id="pp" aria-label="Pause"></button></div>
+   <div class="rail" id="rail"><div class="rfill" id="rfill"></div><div class="knob" id="knob"></div></div>
+  </div>
+  <div class="foot"><span class="now" id="now"></span><p class="act" id="act"></p></div>
+ </div>
+</div>
+<script>
+const PH={prep:'#57575C',disc:'#0672CB',syn:'#7C3AED',cc:'#A15C00',dd:'#B02071',vp:'#0B6E4F'};
+const DARK=(hex,a)=>{const n=parseInt(hex.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255,m=v=>Math.round(v*(1-a));
+ return '#'+((1<<24)+(m(r)<<16)+(m(g)<<8)+m(b)).toString(16).slice(1)};
+const MIX=(hex,a)=>{const n=parseInt(hex.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255,m=v=>Math.round(v*a+255*(1-a));
+ return '#'+((1<<24)+(m(r)<<16)+(m(g)<<8)+m(b)).toString(16).slice(1)};
+const W=52;
+const MONTHS=['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+const GROUPS=[
+ ['Setup and Field Research',[
+  ['Project Preparation','Protocol, recruitment, tools audit',[
+    {ph:'prep',segs:[['Prep',0,2,'Discussion guide, recruitment and tool inventory',0]]}]],
+  ['North America','USA, Canada · 12 interviews',[
+    {ph:'disc',segs:[['USA',2,6.5,'United States',9],['CA',6.5,8,'Canada',3]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',8,11,'Follow-up sessions and tool walkthroughs',0]]}]],
+  ['Western Europe','FR, DE, ES, IT, NL · 16',[
+    {ph:'disc',segs:[['FR',5,7,'France',4],['DE',7,9,'Germany',4],['ES',9,10.5,'Spain',3],['IT',10.5,12,'Italy',3],['NL',12,13,'Netherlands',2]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',13,16,'Follow-ups across the five markets',0]]}]],
+  ['UK & Ireland','UK, Ireland · 6 interviews',[
+    {ph:'disc',segs:[['UK',6,9.5,'United Kingdom',4],['IE',9.5,11,'Ireland',2]]}]],
+  ['Latin America','Brazil, Mexico · 8 interviews',[
+    {ph:'disc',segs:[['BR',10,13.5,'Brazil',5],['MX',13.5,16,'Mexico',3]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',16,19,'Carrier and logistics follow-ups',0]]}]],
+  ['India','India · 6 interviews',[
+    {ph:'disc',segs:[['India',14,18,'India',6]]}]],
+  ['Asia Pacific & Japan','Japan, China, Singapore · 9',[
+    {ph:'disc',segs:[['JP',15,17.5,'Japan',4],['CN',17.5,19.5,'China',3],['SG',19.5,21,'Singapore',2]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',21,24,'Translator-supported follow-ups',0]]}]],
+  ['Australia & NZ','Australia, New Zealand · 5',[
+    {ph:'disc',segs:[['AU',18,20.5,'Australia',3],['NZ',20.5,22,'New Zealand',2]]}]]]],
+ ['Programme Workstreams',[
+  ['Synthesis','Rolling, per region',[
+    {ph:'syn',segs:[['Per-Region Readouts',8,17,'Gaps and commonalities, region by region',0],['Cross-Region',17,25,'Three insights, three opportunity areas',0]]}]],
+  ['Co-Creation','Architects, product, eng, sales',[
+    {ph:'cc',segs:[['Vision',20,24,'Workshops on the shared vision',0],['Framework',24,29,'Module boundaries and ownership',0]]}]],
+  ['Design & Define','Modules, rule layer, blueprints',[
+    {ph:'dd',segs:[['Five Modules',26,34,'Create & Edit through Disposition & Recovery',0],['Rule Layer',34,39,'Regional rules and the V&R engine',0],['Blueprints',39,45,'To-be service blueprints and UI',0]]}]],
+  ['Validate & Pilot','ANZ proof of concept',[
+    {ph:'vp',segs:[['Prototype',42,46,'Sessions with care agents',0],['ANZ Pilot',46,52,'Proof of concept, measured against baseline',0]]}]]]]
+];
+const $=i=>document.getElementById(i),pc=w=>w/W*100+'%';
+const moOf=w=>MONTHS[Math.max(0,Math.min(11,Math.floor(w/W*12)))];
+
+let html='<div class="spacer"></div><div class="axis" id="axis">',BARS=[];
+MONTHS.forEach((m,i)=>{html+=`<div class="mo${i%3?'':' q'}" style="left:${pc(i*W/12)};width:${100/12}%">${m}</div>`});
+html+='</div>';
+let UID=0;
+GROUPS.forEach(([gname,rows],gi2)=>{
+ html+=`<div class="ghead${gi2?'':' first'}">${gname}</div>`;
+ rows.forEach((r,ri)=>{
+  html+=`<div class="rl"><b>${r[0]}</b><span>${r[1]}</span></div><div class="track">`;
+  r[2].forEach((b,bi)=>{
+   const col=PH[b.ph],tint=MIX(col,.06);
+   b.segs.forEach((g,gi)=>{
+    const id='bar'+(UID++),code=g[0],s=g[1],e=g[2],full=g[3],iv=g[4];
+    BARS.push({id,s,e,row:r[0],full,iv,col,tint,dark:DARK(col,.3)});
+    const wp=(e-s)/W*100;
+    html+=`<div class="bar${b.dash?' dash':''}" id="${id}" data-i="${BARS.length-1}"
+      style="--c:${col};--tint:${tint};left:calc(${pc(s)} + ${gi?1.5:0}px);width:calc(${wp}% - ${gi?1.5:0}px)">${wp>1.8?code:''}</div>`})});
+  html+='</div>'});
+});
+$('grid').innerHTML=html;
+const headEl=document.createElement('div');headEl.className='head';headEl.id='head';$('grid').appendChild(headEl);
+
+const PLAY='<svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor"><path d="M1 1.2v9.6a.6.6 0 0 0 .92.5l7.6-4.8a.6.6 0 0 0 0-1L1.92.7A.6.6 0 0 0 1 1.2z"/></svg>';
+const PAUSE='<svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><rect x="0" y="0" width="3.2" height="12" rx="1"/><rect x="6.8" y="0" width="3.2" height="12" rx="1"/></svg>';
+
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let wk=0,mode='play',prevMode='play',timer=null,hov=-1,dragging=false;
+function axisRect(){const a=$('axis').getBoundingClientRect(),g=$('grid').getBoundingClientRect();
+ return {l:a.left-g.left,w:a.width,gl:a.left}}
+function showAll(){return mode==='all'}
+function paint(){
+ const a=axisRect(),all=showAll();
+ headEl.style.left=(a.l+a.w*wk/W)+'px';
+ headEl.style.opacity=all?0:.5;
+ const rb=$('rail').getBoundingClientRect();
+ $('rfill').style.width=(all?rb.width:rb.width*wk/W)+'px';
+ $('knob').style.left=(all?rb.width:rb.width*wk/W)+'px';
+ $('rail').classList.toggle('off',all);
+ const live=[];
+ BARS.forEach(b=>{const el=$(b.id);
+  const on=all||(wk>=b.s&&wk<b.e),past=!all&&wk>=b.e;
+  el.classList.toggle('on',on);
+  el.style.background=(on||past)?b.tint:'#fff';
+  el.style.borderColor=on?b.dark:b.col;
+  el.style.fontWeight=on?'700':'600';
+  el.style.opacity=on?1:(past?.7:.42);
+  if(on&&!all)live.push(b)});
+ $('pp').innerHTML=mode==='play'?PAUSE:PLAY;
+ $('pp').setAttribute('aria-label',mode==='play'?'Pause':'Play');
+ if(all){$('now').textContent='Full plan';
+  $('act').innerHTML='<b>62 interviews across 17 countries in 7 regions</b>, then one framework designed, built and piloted in ANZ.';return}
+ $('now').textContent=`${moOf(wk)} · wk ${Math.floor(wk)+1} of 52`;
+ if(hov>=0){const b=BARS[hov];
+  $('act').innerHTML=`<b>${b.row}</b> · ${b.full}${b.iv?` · ${b.iv} interviews`:''} · ${moOf(b.s)} to ${moOf(b.e-.01)}`;return}
+ $('act').innerHTML=live.length?live.map(b=>`<b>${b.row}</b> · ${b.full}`).join('&nbsp;&nbsp;·&nbsp;&nbsp;')
+  :'Between phases';
+}
+function step(){wk+=.16;if(wk>W)wk=0;paint();timer=setTimeout(step,reduce?420:135)}
+function play(){clearTimeout(timer);mode='play';dragging=false;hov=-1;clearHov();if(wk>=W)wk=0;step()}
+function pause(){clearTimeout(timer);mode='all';dragging=false;hov=-1;clearHov();paint()}
+$('pp').addEventListener('click',()=>{mode==='play'?pause():play()});
+
+function weekAtRail(x){const r=$('rail').getBoundingClientRect();
+ return Math.max(0,Math.min(W,(x-r.left)/r.width*W))}
+function scrubTo(x){clearTimeout(timer);mode='scrub';wk=weekAtRail(x);paint()}
+$('rail').addEventListener('pointerdown',e=>{dragging=true;$('rail').setPointerCapture(e.pointerId);scrubTo(e.clientX)});
+$('rail').addEventListener('pointermove',e=>{if(dragging)scrubTo(e.clientX)});
+$('rail').addEventListener('pointerup',e=>{dragging=false;$('rail').releasePointerCapture(e.pointerId);paint()});
+
+const grid=$('grid');
+function weekAt(x){const a=axisRect();return Math.max(0,Math.min(W,(x-a.gl)/a.w*W))}
+function clearHov(){BARS.forEach(b=>$(b.id).classList.remove('hov'))}
+grid.addEventListener('mouseenter',()=>{if(mode!=='scrub')prevMode=mode});
+grid.addEventListener('mousemove',e=>{clearTimeout(timer);
+ mode='scrub';wk=weekAt(e.clientX);
+ const t=e.target.closest('.bar'),nh=t?+t.dataset.i:-1;
+ if(nh!==hov){hov=nh;clearHov();if(hov>=0)$(BARS[hov].id).classList.add('hov')}
+ paint()});
+grid.addEventListener('mouseleave',()=>{hov=-1;clearHov();
+ if(prevMode==='play')play();else{mode=prevMode;paint()}});
+grid.addEventListener('wheel',e=>{e.preventDefault();clearTimeout(timer);
+ if(mode!=='scrub')prevMode=mode;
+ mode='scrub';wk=Math.max(0,Math.min(W,wk+(e.deltaY+e.deltaX)*.012));paint()},{passive:false});
+addEventListener('resize',paint);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearTimeout(timer);else if(playing)step()});
+paint();play();
+</script></body></html>

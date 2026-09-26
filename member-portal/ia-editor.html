@@ -1,0 +1,375 @@
+
+<html>
+    <head>
+        <style>
+@font-face{font-family:'Uncut Sans';src:url(https://cdn.jsdelivr.net/gh/kaspernordkvist/uncut_sans@b3b42467781e3bd98c68f2d70eba325196e7d9c5/Webfonts/UncutSans-Variable.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
+:root{--t-display:40px;--t-title-lg:24px;--t-title:18px;--t-body:14px;--t-caption:12px;--t-micro:10px;--r-surface:24px;--r-card:16px;--r-inner:12px;--r-node:8px;--r-xs:4px;--r-pill:999px}
+@media (max-width:1023px){:root{--t-display:30px;--t-title-lg:18px;--t-title:16px}}
+@media (max-width:767px){:root{--t-display:22px;--t-title-lg:16px;--t-title:15px}}
+
+            html, body {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            :root {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            * {
+                box-sizing: border-box;
+                -webkit-font-smoothing: inherit;
+            }
+
+            h1, h2, h3, h4, h5, h6, p, figure {
+                margin: 0;
+            }
+
+            body, input, textarea, select, button {
+                font-size:var(--t-caption);
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IA Editor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden}
+  body{font-family:'Uncut Sans',-apple-system,sans-serif;background:#e8eef6;display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh}
+  .frame{width:100%;height:100%;height:100dvh;border-radius:0;position:relative;background:#EDF3FB;overflow:hidden;box-shadow:none;margin:0 auto}
+  #canvas{position:absolute;top:0;left:0;transform-origin:0 0}
+  #grid{position:absolute;top:-4000px;left:-4000px;width:8000px;height:8000px;pointer-events:none;z-index:0;opacity:0;transition:opacity .2s;background-image:linear-gradient(rgba(0,0,0,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.06) 1px,transparent 1px);background-size:20px 20px}
+  #grid.visible{opacity:1}
+  .card{position:absolute;width:80px;height:40px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;text-align:center;cursor:grab;z-index:5;box-shadow:0 1px 3px rgba(0,0,0,0.12);user-select:none;overflow:hidden;-webkit-user-select:none;touch-action:none}
+  .card-inner{width:100%;padding:8px 4px;overflow:hidden}
+  .card-line{display:block;font-weight:600;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card-line.l1{font-size:var(--t-micro)}.card-line.l2{font-size:var(--t-micro);opacity:.85;margin-top:1px}
+  .card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:20}
+  .card.dragging{cursor:grabbing;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:100;opacity:.9}
+  .card.connect-source{outline:2px solid #444;outline-offset:1px}
+  .card.connect-hover{outline:2px solid #888;outline-offset:1px}
+  .card.selected{outline:2px solid #333;outline-offset:1px}
+  .card.del-hover{outline:2px solid #c0392b;outline-offset:1px;opacity:.6}
+  .port{position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(0,0,0,0.2);border:1px solid #fff;cursor:crosshair;z-index:30;opacity:0;transition:opacity .12s}
+  .card:hover .port{opacity:1}.port:hover{background:#333;transform:scale(1.3)}
+  .connect-mode .port{opacity:1}
+  .port.top{top:-3px;left:50%;margin-left:-3px}.port.bottom{bottom:-3px;left:50%;margin-left:-3px}
+  .port.left{left:-3px;top:50%;margin-top:-3px}.port.right{right:-3px;top:50%;margin-top:-3px}
+
+  /* Touch: make ports bigger on touch devices */
+  @media(pointer:coarse){
+    .port{width:14px;height:14px;margin-left:-7px!important;margin-top:-7px!important;opacity:.6!important}
+    .port.top{top:-7px}.port.bottom{bottom:-7px}.port.left{left:-7px}.port.right{right:-7px}
+    .bp{width:14px;height:14px;margin-left:-7px;margin-top:-7px}
+  }
+
+  .c-screen{background:#4169E1;color:#fff}.c-auth{background:#9B59B6;color:#fff}
+  .c-home{background:#E74C3C;color:#fff}.c-home .l1{font-size:var(--t-micro);font-weight:600}
+  .c-item{background:#FFD93D;color:#1a1a1a}.c-menu{background:#FF6B8A;color:#fff}.c-menu .l1{font-size:var(--t-micro)}
+  .c-tab{background:#FFB6C1;color:#333}.c-action{background:#E74C3C;color:#fff}
+  .c-comp{background:#FFD93D;color:#333}.c-portal{background:#6BC76B;color:#fff}
+  svg#wires{position:absolute;top:0;left:0;pointer-events:none;z-index:2;overflow:visible}
+  svg#wires path.vis{pointer-events:stroke;cursor:pointer}
+  svg#wires path.hit{stroke:transparent;stroke-width:10;fill:none;pointer-events:stroke;cursor:pointer}
+  .bp{position:absolute;width:8px;height:8px;border-radius:50%;background:#555;border:1.5px solid #fff;cursor:grab;z-index:40;box-shadow:0 1px 3px rgba(0,0,0,0.3);margin-left:-4px;margin-top:-4px}
+  .bp:hover{background:#333;transform:scale(1.2)}.bp.dragging{background:#c0392b}
+
+  /* ─── Toolbar ─── */
+  .tb{position:absolute;top:50%;right:12px;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:500;background:rgba(255,255,255,0.96);padding:8px 6px;border-radius:var(--r-node);box-shadow:0 2px 12px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.08);border:1px solid #ddd;align-items:center}
+  .tb button{width:32px;height:32px;border:1px solid #d0d0d0;border-radius:var(--r-xs);background:#fff;font-size:var(--t-micro);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#444;padding:0;position:relative;-webkit-tap-highlight-color:transparent}
+  .tb button:hover{background:#eee;border-color:#bbb}
+  .tb button.active{background:#333;color:#fff;border-color:#333}
+  .tb button.snap-on{background:#555;color:#fff;border-color:#555}
+  .tb button.save-ok{background:#27ae60;color:#fff;border-color:#27ae60}
+  .tb .sep{height:1px;width:22px;background:#ddd;margin:3px 0}
+  .tb button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+  /* Small screens: toolbar moves to bottom, horizontal */
+  @media(max-width:600px){
+    .tb{top:auto;right:auto;bottom:12px;left:50%;transform:translateX(-50%);flex-direction:row;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px);padding:6px 8px;gap:3px}
+    .tb .sep{height:22px;width:1px;margin:0 2px}
+    .tb button{width:30px;height:30px}
+  }
+
+  .tip{position:fixed;background:#222;color:#fff;font-size:var(--t-micro);padding:4px 8px;border-radius:var(--r-xs);white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .12s}
+  .tip.show{opacity:1}
+  @media(pointer:coarse){.tip{display:none!important}}
+
+  /* ─── Legend ─── */
+  .legend{position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.95);border:1px solid #ddd;border-radius:var(--r-xs);padding:6px 10px;z-index:500;font-size:var(--t-caption)}
+  .lr{display:flex;align-items:center;gap:6px;margin-bottom:4px}.lr:last-child{margin-bottom:0}
+  .ls{width:22px;height:10px;border-radius:var(--r-xs);flex-shrink:0}
+  @media(max-width:480px){
+    .legend{top:8px;left:8px;font-size:var(--t-micro);padding:4px 8px}
+    .ls{width:16px;height:8px}
+    .lr{gap:4px;margin-bottom:2px}
+  }
+
+  /* ─── Zoom controls ─── */
+  .zc{position:absolute;bottom:12px;left:12px;display:flex;flex-direction:column;gap:3px;z-index:500}
+  .zc button{width:32px;height:32px;border:1px solid #ccc;border-radius:var(--r-xs);background:rgba(255,255,255,0.95);font-size:var(--t-body);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#444;box-shadow:0 2px 8px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.06);-webkit-tap-highlight-color:transparent}
+  .zc button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .zc button:hover{background:#eee;border-color:#bbb}
+  @media(max-width:600px){
+    .zc{bottom:72px;left:8px}
+  }
+
+  /* ─── Edit panel ─── */
+  .panel{position:absolute;top:50%;right:60px;transform:translateY(-50%);width:182px;background:rgba(255,255,255,0.97);border:1px solid #ddd;border-radius:var(--r-node);box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:8px;z-index:500;font-size:var(--t-caption);display:none}
+  .panel.visible{display:block}
+  .panel h3{font-size:var(--t-caption);margin-bottom:6px;color:#333}
+  .panel label{display:block;font-weight:600;margin:5px 0 2px;color:#555;font-size:var(--t-caption)}
+  .panel textarea{width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:var(--r-xs);font-size:var(--t-caption);font-family:inherit;resize:none}
+  .panel .cg{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+  .panel .cs{width:22px;height:16px;border-radius:var(--r-xs);cursor:pointer;border:1.5px solid transparent}
+  .panel .cs:hover,.panel .cs.active{border-color:#333}
+  .panel .tc{display:flex;gap:5px;margin-top:4px}
+  .panel .ts{width:20px;height:14px;border-radius:var(--r-xs);cursor:pointer;border:1px solid transparent}
+  .panel .ts:hover,.panel .ts.active{border-color:#333}
+  .panel button{margin-top:6px;width:100%;padding:6px;border:1px solid #ccc;border-radius:var(--r-xs);background:#fff;font-size:var(--t-caption);font-family:inherit;font-weight:600;cursor:pointer}
+  @media(max-width:600px){
+    .panel{top:auto;bottom:72px;right:12px;transform:none;width:calc(100vw - 24px);max-width:260px}
+  }
+
+  /* ─── Toast ─── */
+  .toast{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:4px 12px;border-radius:var(--r-node);font-size:var(--t-micro);font-weight:500;z-index:600;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+  @media(max-width:600px){
+    .toast{bottom:80px}
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+<div id="canvas"><div id="grid"></div></div>
+<div class="tb">
+  <button id="btn-move" onclick="setMode('move')" data-tip="Move Cards"><svg viewBox="0 0 16 16"><path d="M8 2v12M2 8h12M8 2l-2 2M8 2l2 2M8 14l-2-2M8 14l2-2M2 8l2-2M2 8l2 2M14 8l-2-2M14 8l-2 2"/></svg></button>
+  <button id="btn-bend" onclick="setMode('bend')" data-tip="Add Breakpoints"><svg viewBox="0 0 16 16"><path d="M2 14V8h12V2"/><circle cx="8" cy="8" r="2.5"/></svg></button>
+  <button id="btn-connect" onclick="setMode('connect')" data-tip="Connect Cards"><svg viewBox="0 0 16 16"><path d="M6 10l4-4"/><circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="4" r="2.5"/></svg></button>
+  <button id="btn-toggle" onclick="setMode('toggle')" data-tip="Toggle solid / dashed"><svg viewBox="0 0 16 16"><path d="M2 6h12"/><path d="M2 10h12" stroke-dasharray="2 2"/></svg></button>
+  <button id="btn-edit" onclick="setMode('edit')" data-tip="Edit Cards"><svg viewBox="0 0 16 16"><path d="M11 2l3 3-8 8H3v-3z"/></svg></button>
+  <div class="sep"></div>
+  <button id="btn-addcard" onclick="addNewCard()" data-tip="Add a new card"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg></button>
+  <button id="btn-del" onclick="setMode('del')" data-tip="Delete"><svg viewBox="0 0 16 16"><path d="M3 5h10M5 5V3h6v2M5 5v8h6V5"/><line x1="7" y1="7" x2="7" y2="11"/><line x2="9" y1="7" x1="9" y2="11"/></svg></button>
+  <button id="btn-undo" onclick="undo()" data-tip="Undo (Ctrl+Z)"><svg viewBox="0 0 16 16"><path d="M4 7l-3 3 3 3"/><path d="M1 10h9a4 4 0 000-8H6"/></svg></button>
+  <button id="btn-redo" onclick="redo()" data-tip="Redo (Ctrl+Y)"><svg viewBox="0 0 16 16"><path d="M12 7l3 3-3 3"/><path d="M15 10h-9a4 4 0 010-8h4"/></svg></button>
+  <div class="sep"></div>
+  <button id="btn-snap" onclick="toggleSnap()" data-tip="Toggle grid snap"><svg viewBox="0 0 16 16"><path d="M0 4h16M0 8h16M0 12h16M4 0v16M8 0v16M12 0v16"/></svg></button>
+  <button onclick="saveDesign()" id="btn-save" data-tip="Save to browser storage"><svg viewBox="0 0 16 16"><path d="M3 1h8l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z"/><path d="M5 1v4h5V1"/><path d="M5 10h6"/></svg></button>
+  <button onclick="exportAll()" data-tip="Copy layout as JSON"><svg viewBox="0 0 16 16"><path d="M10 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V4z"/><path d="M10 1v3h3"/><path d="M6 8h4M6 11h4"/></svg></button>
+  <button onclick="resetLayout()" data-tip="Reset to default layout"><svg viewBox="0 0 16 16"><path d="M2 8a6 6 0 0111.5-2M14 8a6 6 0 01-11.5 2"/><path d="M13.5 3v3h-3M2.5 13v-3h3"/></svg></button>
+</div>
+<div id="tip" class="tip"></div>
+<div class="panel" id="panel">
+  <h3 id="panel-title">Edit</h3>
+  <label>Label (Enter = new line)</label>
+  <textarea id="inp-label" rows="2" oninput="onLabelChange()"></textarea>
+  <label>Font size (px)</label>
+  <input type="number" id="inp-fs" min="4" max="40" step="0.5" value="10" oninput="onFsChange()" style="width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:var(--r-xs);font-size:var(--t-caption);font-family:inherit">
+  <label>Background</label>
+  <div class="cg" id="bg-colors"></div>
+  <label>Text</label>
+  <div class="tc" id="txt-colors"></div>
+  <button onclick="closePanel()">Done</button>
+</div>
+<div class="legend">
+  <div class="lr"><div class="ls" style="background:#E74C3C"></div>Product Category</div>
+  <div class="lr"><div class="ls" style="background:#4169E1"></div>App Screen</div>
+  <div class="lr"><div class="ls" style="background:#FFB6C1"></div>Tab Navigation</div>
+  <div class="lr"><div class="ls" style="background:#6BC76B"></div>External Portal</div>
+  <div class="lr"><div class="ls" style="background:#FFD93D"></div>Component / Action</div>
+</div>
+<div class="zc">
+  <button onclick="zoomIn()" data-tip="Zoom in"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg></button>
+  <button onclick="zoomOut()" data-tip="Zoom out"><svg viewBox="0 0 16 16"><path d="M3 8h10"/></svg></button>
+  <button onclick="zoomFit()" data-tip="Fit to screen"><svg viewBox="0 0 16 16"><path d="M1 5V2h3M12 2h3v3M15 11v3h-3M4 14H1v-3"/><rect x="4" y="4" width="8" height="8" rx="1"/></svg></button>
+</div>
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const CW=80,CH=40,ARR=3,GRID=20;
+let snapOn=false;
+function snp(v){return Math.round(v/GRID)*GRID}
+function splitLbl(lb){
+  if(lb.indexOf('\n')!==-1){const p=lb.split('\n');return{l1:p[0].trim(),l2:p.slice(1).join(' ').trim()}}
+  if(lb.length<=12)return{l1:lb,l2:''};
+  let b=-1;for(let i=Math.min(lb.length-1,14);i>=6;i--)if(lb[i]===' '){b=i;break}
+  if(b===-1)b=12;return{l1:lb.substring(0,b).trim(),l2:lb.substring(b).trim()};
+}
+const N=[],E=[],NE={};
+function aN(id,lb,tp,x,y,bg,fg,fs){N.push({id,label:lb,type:tp,x,y,ox:x,oy:y,bg:bg||null,fg:fg||null,fs:fs||null})}
+function aE(fr,to,da,fp,tp,wps){
+  if(E.find(e=>e.f===fr&&e.t===to))return;
+  const w=Array.isArray(wps)?wps.map(p=>({x:p.x,y:p.y})):[];
+  E.push({f:fr,t:to,d:!!da,fp:fp||'a',tp:tp||'a',w});
+}
+const D={"nodes":[{"id":"splash","label":"Splash Screen","type":"screen","x":1000,"y":-160,"bg":null,"fg":null,"fontSize":null},{"id":"login","label":"Log In Options","type":"screen","x":1000,"y":-80,"bg":null,"fg":null,"fontSize":null},{"id":"onehcid","label":"One Healthcare Portal","type":"auth","x":940,"y":40,"bg":"#6BC76B","fg":"#1a1a1a","fontSize":null},{"id":"home","label":"Home Screen","type":"home","x":1000,"y":120,"bg":"#4169E1","fg":null,"fontSize":null},{"id":"hamburger","label":"Hamburger Button","type":"item","x":-80,"y":220,"bg":null,"fg":null,"fontSize":null},{"id":"t-appstat","label":"Application Status","type":"item","x":240,"y":220,"bg":"#E74C3C","fg":"#ffffff","fontSize":null},{"id":"t-comm","label":"Commissions","type":"item","x":540,"y":220,"bg":"#E74C3C","fg":"#ffffff","fontSize":null},{"id":"t-elig","label":"Eligibility","type":"item","x":800,"y":220,"bg":"#E74C3C","fg":"#ffffff","fontSize":null},{"id":"a-find","label":"Find Plans","type":"item","x":1080,"y":580,"bg":null,"fg":null,"fontSize":null},{"id":"a-manage","label":"Manage Account","type":"item","x":1080,"y":520,"bg":null,"fg":null,"fontSize":null},{"id":"a-notif","label":"Notification","type":"item","x":1080,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"a-articles","label":"Featured Articles","type":"item","x":1080,"y":220,"bg":null,"fg":null,"fontSize":null},{"id":"a-privacy","label":"Privacy","type":"item","x":1080,"y":460,"bg":null,"fg":null,"fontSize":null},{"id":"a-terms","label":"Terms & Conditions","type":"item","x":1080,"y":400,"bg":null,"fg":null,"fontSize":null},{"id":"a-disclaim","label":"Disclaimer","type":"item","x":1080,"y":340,"bg":null,"fg":null,"fontSize":null},{"id":"hm-scr","label":"Hamburger Screen","type":"screen","x":-80,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"hm-home","label":"Home","type":"menu","x":20,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"hm-application-status","label":"Application Status","type":"menu","x":20,"y":420,"bg":null,"fg":null,"fontSize":null},{"id":"hm-commission-status","label":"Commission Status","type":"menu","x":20,"y":480,"bg":null,"fg":null,"fontSize":null},{"id":"hm-eligibility","label":"Eligibility","type":"menu","x":20,"y":540,"bg":null,"fg":null,"fontSize":null},{"id":"hm-book-of-business","label":"Book of Business","type":"menu","x":20,"y":600,"bg":null,"fg":null,"fontSize":null},{"id":"hm-agent-profile","label":"Agent\n Profile","type":"menu","x":20,"y":660,"bg":null,"fg":null,"fontSize":null},{"id":"hm-plan-search","label":"Plan Search","type":"menu","x":20,"y":720,"bg":null,"fg":null,"fontSize":null},{"id":"hm-drug-cost-estimator","label":"Drug Cost Estimator","type":"menu","x":20,"y":780,"bg":null,"fg":null,"fontSize":null},{"id":"hm-jarvis-website","label":"Jarvis Website","type":"menu","x":20,"y":840,"bg":null,"fg":null,"fontSize":null},{"id":"hm-face-id","label":"Face ID","type":"menu","x":20,"y":960,"bg":null,"fg":null,"fontSize":null},{"id":"hm-contact-us","label":"Contact Us","type":"menu","x":20,"y":900,"bg":null,"fg":null,"fontSize":null},{"id":"hm-sign-out","label":"Sign Out","type":"menu","x":20,"y":1020,"bg":null,"fg":null,"fontSize":null},{"id":"dce","label":"Drug Cost Estimator","type":"portal","x":140,"y":780,"bg":null,"fg":"#1a1a1a","fontSize":null},{"id":"portal","label":"Portal Website page","type":"portal","x":140,"y":840,"bg":null,"fg":"#1a1a1a","fontSize":null},{"id":"contact-scr","label":"Contact Us","type":"portal","x":140,"y":900,"bg":"#6BC76B","fg":"#1a1a1a","fontSize":null},{"id":"app-scr","label":"Application Status","type":"screen","x":240,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"app-aid","label":"Agent ID","type":"comp","x":340,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"app-myid","label":"My IDs","type":"comp","x":240,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"app-aname","label":"Agent Name","type":"comp","x":140,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"app-result","label":"App Search Result","type":"screen","x":240,"y":440,"bg":null,"fg":null,"fontSize":null},{"id":"app-detail","label":"App Details","type":"screen","x":240,"y":500,"bg":null,"fg":null,"fontSize":null},{"id":"comm-scr","label":"Commission Search","type":"screen","x":540,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"comm-agent","label":"Agent","type":"comp","x":600,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"comm-member","label":"Member","type":"comp","x":480,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"comm-result","label":"Comm Search Result","type":"screen","x":540,"y":440,"bg":null,"fg":null,"fontSize":null},{"id":"comm-detail","label":"Commission Details","type":"screen","x":540,"y":500,"bg":null,"fg":null,"fontSize":null},{"id":"comm-status","label":"Commission Status","type":"comp","x":480,"y":580,"bg":null,"fg":null,"fontSize":null},{"id":"comm-reason","label":"Status Reason","type":"comp","x":600,"y":580,"bg":null,"fg":null,"fontSize":null},{"id":"elig-scr","label":"Eligibility","type":"screen","x":800,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"elig-mcare","label":"Medicare Eligibility","type":"comp","x":740,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"elig-mcaid","label":"Medicaid Eligibility","type":"comp","x":860,"y":360,"bg":null,"fg":null,"fontSize":null},{"id":"elig-mcare-res","label":"Medicare Result","type":"screen","x":740,"y":440,"bg":null,"fg":null,"fontSize":null},{"id":"elig-mcaid-res","label":"Medicaid Result","type":"screen","x":860,"y":440,"bg":null,"fg":null,"fontSize":null},{"id":"sep-notif","label":"SEP \nNotification","type":"comp","x":740,"y":520,"bg":null,"fg":null,"fontSize":null},{"id":"ma-over","label":"MA Plan Overdose","type":"comp","x":860,"y":520,"bg":null,"fg":null,"fontSize":null},{"id":"bob-scr","label":"Book of Business","type":"screen","x":540,"y":760,"bg":"#E74C3C","fg":"#ffffff","fontSize":null},{"id":"bob-name","label":"Name","type":"comp","x":480,"y":840,"bg":null,"fg":null,"fontSize":null},{"id":"bob-number","label":"Number","type":"comp","x":600,"y":840,"bg":null,"fg":null,"fontSize":null},{"id":"bob-result","label":"BoB Search Result","type":"screen","x":540,"y":920,"bg":null,"fg":null,"fontSize":null},{"id":"bob-profile","label":"Member Profile","type":"screen","x":540,"y":980,"bg":null,"fg":null,"fontSize":null},{"id":"bob-meminfo","label":"Member Information","type":"comp","x":440,"y":1060,"bg":"#FFB6C1","fg":null,"fontSize":null},{"id":"bob-appdet","label":"Application Details","type":"comp","x":540,"y":1060,"bg":"#FFB6C1","fg":null,"fontSize":null},{"id":"bob-commdet","label":"Commission Details","type":"comp","x":640,"y":1060,"bg":"#FFB6C1","fg":null,"fontSize":null},{"id":"plan-scr","label":"Plan Search","type":"screen","x":800,"y":720,"bg":"#E74C3C","fg":null,"fontSize":null},{"id":"plan-zip","label":"Zip Code","type":"comp","x":860,"y":800,"bg":null,"fg":null,"fontSize":null},{"id":"plan-addr","label":"Address","type":"comp","x":740,"y":800,"bg":null,"fg":null,"fontSize":null},{"id":"plan-result","label":"Search Result","type":"screen","x":800,"y":880,"bg":null,"fg":null,"fontSize":null},{"id":"plan-view","label":"View Plans","type":"screen","x":800,"y":940,"bg":null,"fg":null,"fontSize":null},{"id":"agent-scr","label":"Agent \nProfile","type":"screen","x":1200,"y":660,"bg":"#E74C3C","fg":null,"fontSize":null},{"id":"tab-profile","label":"Profile","type":"tab","x":1020,"y":740,"bg":null,"fg":null,"fontSize":null},{"id":"tab-license","label":"License & Appt","type":"tab","x":1140,"y":740,"bg":null,"fg":null,"fontSize":null},{"id":"tab-cert","label":"Certification","type":"tab","x":1380,"y":740,"bg":null,"fg":null,"fontSize":null},{"id":"tab-hier","label":"Hierarchy","type":"tab","x":1260,"y":740,"bg":null,"fg":null,"fontSize":null},{"id":"edit-personal","label":"Edit Personal Info","type":"action","x":1020,"y":820,"bg":null,"fg":null,"fontSize":null},{"id":"edit-deposit","label":"Edit Deposit Info","type":"action","x":1140,"y":820,"bg":null,"fg":null,"fontSize":null},{"id":"notif-scr","label":"Notification Centre","type":"screen","x":1200,"y":280,"bg":null,"fg":null,"fontSize":null},{"id":"article-scr","label":"Article Details","type":"screen","x":1200,"y":220,"bg":null,"fg":null,"fontSize":null},{"id":"privacy-scr","label":"Privacy Page","type":"screen","x":1200,"y":460,"bg":null,"fg":null,"fontSize":null},{"id":"terms-scr","label":"Terms & Conditions","type":"screen","x":1200,"y":400,"bg":null,"fg":null,"fontSize":null},{"id":"disclaim-scr","label":"Disclaimers","type":"screen","x":1200,"y":340,"bg":null,"fg":null,"fontSize":null},{"id":"c1773446945453","label":"Face ID/ Fingerprint","type":"screen","x":1060,"y":-20,"bg":"#FFD93D","fg":"#1a1a1a","fontSize":null},{"id":"c1773481264856","label":"One Healthcare \nLog In ID","type":"screen","x":940,"y":-20,"bg":"#FFD93D","fg":"#1a1a1a","fontSize":null},{"id":"c1773481575192","label":"Face Id\nSettings","type":"screen","x":140,"y":960,"bg":null,"fg":null,"fontSize":null}],"edges":[{"from":"splash","to":"login","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"onehcid","to":"home","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"hamburger","to":"hm-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"t-appstat","to":"app-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"t-comm","to":"comm-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"t-elig","to":"elig-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-scr","to":"app-aid","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-aname","to":"app-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-result","to":"app-detail","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-scr","to":"comm-agent","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-member","to":"comm-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-result","to":"comm-detail","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-detail","to":"comm-status","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-scr","to":"elig-mcare","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"bob-scr","to":"bob-name","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"bob-number","to":"bob-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"bob-result","to":"bob-profile","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"bob-profile","to":"bob-meminfo","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"plan-scr","to":"plan-zip","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"plan-addr","to":"plan-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"plan-result","to":"plan-view","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"agent-scr","to":"tab-profile","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"a-notif","to":"notif-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"a-articles","to":"article-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"a-privacy","to":"privacy-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"a-terms","to":"terms-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"a-disclaim","to":"disclaim-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-mcare-res","to":"sep-notif","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-mcare-res","to":"ma-over","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-mcare","to":"elig-mcare-res","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-mcaid","to":"elig-mcaid-res","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"elig-scr","to":"elig-mcaid","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-scr","to":"comm-member","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-agent","to":"comm-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"comm-detail","to":"comm-reason","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-scr","to":"app-aname","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-scr","to":"app-myid","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-myid","to":"app-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"app-aid","to":"app-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"hm-drug-cost-estimator","to":"dce","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"hm-jarvis-website","to":"portal","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"hm-contact-us","to":"contact-scr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"agent-scr","to":"tab-license","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"agent-scr","to":"tab-hier","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"agent-scr","to":"tab-cert","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"tab-profile","to":"edit-personal","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"tab-profile","to":"edit-deposit","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"plan-scr","to":"plan-addr","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"plan-zip","to":"plan-result","dashed":false,"fromPort":"auto","toPort":"auto","waypoints":[]},{"from":"hm-scr","to":"hm-commission-status","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":500}]},{"from":"hm-scr","to":"hm-application-status","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":440}]},{"from":"hm-scr","to":"hm-home","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":380}]},{"from":"hm-scr","to":"hm-eligibility","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":560}]},{"from":"hm-scr","to":"hm-book-of-business","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":620}]},{"from":"hm-scr","to":"hm-agent-profile","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":680}]},{"from":"hm-scr","to":"hm-plan-search","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":740}]},{"from":"hm-scr","to":"hm-drug-cost-estimator","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":800}]},{"from":"hm-scr","to":"hm-jarvis-website","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":860}]},{"from":"hm-scr","to":"hm-sign-out","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":1040}]},{"from":"hm-scr","to":"hm-contact-us","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":920}]},{"from":"hm-scr","to":"hm-face-id","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":-20,"y":980}]},{"from":"home","to":"t-appstat","dashed":false,"fromPort":"left","toPort":"top","waypoints":[{"x":600,"y":140}]},{"from":"home","to":"hamburger","dashed":false,"fromPort":"left","toPort":"top","waypoints":[{"x":460,"y":120}]},{"from":"home","to":"t-comm","dashed":false,"fromPort":"left","toPort":"top","waypoints":[{"x":740,"y":160}]},{"from":"home","to":"t-elig","dashed":false,"fromPort":"left","toPort":"top","waypoints":[{"x":860,"y":180}]},{"from":"bob-scr","to":"bob-number","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[]},{"from":"bob-name","to":"bob-result","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[]},{"from":"bob-profile","to":"bob-appdet","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[]},{"from":"bob-profile","to":"bob-commdet","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[]},{"from":"home","to":"a-articles","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":240}]},{"from":"home","to":"a-notif","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":300}]},{"from":"home","to":"a-disclaim","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":360}]},{"from":"home","to":"a-terms","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":420}]},{"from":"home","to":"a-privacy","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":480}]},{"from":"home","to":"a-manage","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":540}]},{"from":"a-manage","to":"agent-scr","dashed":true,"fromPort":"right","toPort":"top","waypoints":[{"x":1280,"y":540}]},{"from":"hm-agent-profile","to":"agent-scr","dashed":false,"fromPort":"right","toPort":"left","waypoints":[]},{"from":"hm-plan-search","to":"plan-scr","dashed":false,"fromPort":"right","toPort":"left","waypoints":[]},{"from":"hm-book-of-business","to":"bob-scr","dashed":false,"fromPort":"right","toPort":"left","waypoints":[{"x":280,"y":620},{"x":322,"y":780}]},{"from":"home","to":"a-find","dashed":false,"fromPort":"bottom","toPort":"left","waypoints":[{"x":1100,"y":600}]},{"from":"a-find","to":"plan-scr","dashed":true,"fromPort":"bottom","toPort":"right","waypoints":[{"x":980,"y":660},{"x":1012,"y":740}]},{"from":"login","to":"c1773481264856","dashed":false,"fromPort":"left","toPort":"top","waypoints":[{"x":960,"y":-60}]},{"from":"c1773481264856","to":"onehcid","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[]},{"from":"login","to":"c1773446945453","dashed":false,"fromPort":"right","toPort":"top","waypoints":[{"x":1100,"y":-60},{"x":1120,"y":-60}]},{"from":"c1773446945453","to":"home","dashed":false,"fromPort":"bottom","toPort":"top","waypoints":[{"x":1060,"y":100}]},{"from":"hm-face-id","to":"c1773481575192","dashed":false,"fromPort":"right","toPort":"left","waypoints":[]},{"from":"hm-sign-out","to":"login","dashed":false,"fromPort":"bottom","toPort":"right","waypoints":[{"x":1500,"y":1140},{"x":1340,"y":-60}]},{"from":"hm-application-status","to":"t-appstat","dashed":true,"fromPort":"right","toPort":"left","waypoints":[{"x":120,"y":440},{"x":140,"y":240}]},{"from":"hm-commission-status","to":"t-comm","dashed":true,"fromPort":"right","toPort":"left","waypoints":[{"x":140,"y":500},{"x":450,"y":580},{"x":440,"y":240}]},{"from":"hm-eligibility","to":"t-elig","dashed":true,"fromPort":"right","toPort":"left","waypoints":[{"x":120,"y":560},{"x":300,"y":600},{"x":713,"y":659},{"x":740,"y":240}]}]};
+D.nodes.forEach(n=>aN(n.id,n.label,n.type,n.x,n.y,n.bg,n.fg,n.fontSize));
+D.edges.forEach(e=>aE(e.from,e.to,e.dashed,e.fromPort==='auto'?'a':e.fromPort,e.toPort==='auto'?'a':e.toPort,e.waypoints||[]));
+const OE=JSON.parse(JSON.stringify(E)),ON=JSON.parse(JSON.stringify(N));
+const canvas=document.getElementById('canvas'),svgNS='http://www.w3.org/2000/svg';
+const svg=document.createElementNS(svgNS,'svg');
+svg.id='wires';svg.style.cssText='position:absolute;left:-1000px;top:-1000px;width:6000px;height:6000px';
+svg.setAttribute('viewBox','-1000 -1000 6000 6000');canvas.appendChild(svg);
+const defs=document.createElementNS(svgNS,'defs');
+['as','ad'].forEach((id,i)=>{const m=document.createElementNS(svgNS,'marker');m.setAttribute('id',id);m.setAttribute('markerWidth','5');m.setAttribute('markerHeight','4');m.setAttribute('refX','1');m.setAttribute('refY','2');m.setAttribute('orient','auto');const p=document.createElementNS(svgNS,'polygon');p.setAttribute('points','0 0.3,5 2,0 3.7');p.setAttribute('fill',i?'#bbb':'#888');m.appendChild(p);defs.appendChild(m)});
+svg.appendChild(defs);
+function mkC(n){const el=document.createElement('div');el.className=`card c-${n.type}`;el.style.left=n.x+'px';el.style.top=n.y+'px';if(n.bg)el.style.background=n.bg;if(n.fg)el.style.color=n.fg;el.dataset.id=n.id;const{l1,l2}=splitLbl(n.label);const inner=document.createElement('div');inner.className='card-inner';const s1=document.createElement('span');s1.className='card-line l1';s1.textContent=l1;if(n.fs)s1.style.fontSize=n.fs+'px';inner.appendChild(s1);if(l2){const s2=document.createElement('span');s2.className='card-line l2';s2.textContent=l2;if(n.fs)s2.style.fontSize=Math.max(n.fs-.8,4)+'px';inner.appendChild(s2)}el.appendChild(inner);['top','bottom','left','right'].forEach(s=>{const d=document.createElement('div');d.className=`port ${s}`;d.dataset.side=s;d.dataset.nid=n.id;el.appendChild(d)});canvas.appendChild(el);NE[n.id]=el}
+function refC(n){const el=NE[n.id];el.style.background=n.bg||'';el.style.color=n.fg||'';const inner=el.querySelector('.card-inner');const{l1,l2}=splitLbl(n.label);inner.innerHTML='';const s1=document.createElement('span');s1.className='card-line l1';s1.textContent=l1;if(n.fs)s1.style.fontSize=n.fs+'px';inner.appendChild(s1);if(l2){const s2=document.createElement('span');s2.className='card-line l2';s2.textContent=l2;if(n.fs)s2.style.fontSize=Math.max(n.fs-.8,4)+'px';inner.appendChild(s2)}}
+N.forEach(n=>mkC(n));
+function pxy(n,s,t){const g=t?ARR:0;if(s==='top'||s==='t')return{x:n.x+CW/2,y:n.y-g};if(s==='bottom'||s==='b')return{x:n.x+CW/2,y:n.y+CH+g};if(s==='left'||s==='l')return{x:n.x-g,y:n.y+CH/2};if(s==='right'||s==='r')return{x:n.x+CW+g,y:n.y+CH/2};return{x:n.x+CW/2,y:n.y+CH+g}}
+function autoP(a,b){const dx=(b.x+CW/2)-(a.x+CW/2),dy=(b.y+CH/2)-(a.y+CH/2);if(Math.abs(dy)>=Math.abs(dx)*0.3&&dy>0)return['bottom','top'];if(Math.abs(dy)>=Math.abs(dx)*0.3&&dy<0)return['top','bottom'];if(dx>0)return['right','left'];return['left','right']}
+function orthoPath(pts,R){if(pts.length<2)return'';let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=1;i<pts.length;i++){const[px,py]=pts[i-1],[cx,cy]=pts[i];if(i<pts.length-1){const[nx,ny]=pts[i+1];const d1=Math.hypot(cx-px,cy-py)||1,d2=Math.hypot(nx-cx,ny-cy)||1,r=Math.min(R,d1/3,d2/3);if(r>0.5){const ux1=(cx-px)/d1,uy1=(cy-py)/d1,ux2=(nx-cx)/d2,uy2=(ny-cy)/d2;d+=`L${cx-ux1*r},${cy-uy1*r}Q${cx},${cy},${cx+ux2*r},${cy+uy2*r}`;continue}}d+=`L${cx},${cy}`}return d}
+function buildD(e){const a=N.find(n=>n.id===e.f),b=N.find(n=>n.id===e.t);if(!a||!b)return'';let fs=e.fp,ts=e.tp;if(fs==='a'){const[af]=autoP(a,b);fs=af}if(ts==='a'){const[,at]=autoP(a,b);ts=at}const p1=pxy(a,fs,false),p2=pxy(b,ts,true),x1=p1.x,y1=p1.y,x2=p2.x,y2=p2.y;const pts=[[x1,y1]];if(e.w.length>0){let px=x1,py=y1;e.w.forEach(wp=>{pts.push([px,wp.y]);pts.push([wp.x,wp.y]);px=wp.x;py=wp.y});pts.push([x2,py]);pts.push([x2,y2])}else{if(Math.abs(x1-x2)<2||Math.abs(y1-y2)<2){pts.push([x2,y2])}else{const my=(y1+y2)/2;pts.push([x1,my]);pts.push([x2,my]);pts.push([x2,y2])}}const clean=[pts[0]];for(let i=1;i<pts.length-1;i++){const[px,py]=pts[i-1],[cx,cy]=pts[i],[nx,ny]=pts[i+1];if(!((Math.abs(px-cx)<1&&Math.abs(cx-nx)<1)||(Math.abs(py-cy)<1&&Math.abs(cy-ny)<1)))clean.push(pts[i])}clean.push(pts[pts.length-1]);return orthoPath(clean,6)}
+let bpEls=[];
+function clearBP(){bpEls.forEach(el=>el.remove());bpEls=[]}
+function showBP(){clearBP();if(mode!=='bend')return;E.forEach((e,ei)=>{e.w.forEach((wp,wi)=>{const el=document.createElement('div');el.className='bp';el.style.left=wp.x+'px';el.style.top=wp.y+'px';el.dataset.ei=ei;el.dataset.wi=wi;canvas.appendChild(el);bpEls.push(el)})})}
+const US=[],RS=[];
+function snapSt(){return JSON.stringify({n:N.map(n=>({...n})),e:E.map(e=>({...e,w:e.w.map(w=>({...w}))}))})}
+function pushU(){US.push(snapSt());if(US.length>30)US.shift();RS.length=0}
+function applyState(s){N.forEach(n=>{const el=NE[n.id];if(el)el.remove();delete NE[n.id]});N.length=0;E.length=0;s.n.forEach(n=>{N.push(n);mkC(n)});s.e.forEach(e=>E.push(e));draw()}
+function undo(){if(!US.length){toast('Nothing to undo.');return}RS.push(snapSt());const s=JSON.parse(US.pop());applyState(s);toast('Undone.')}
+function redo(){if(!RS.length){toast('Nothing to redo.');return}US.push(snapSt());const s=JSON.parse(RS.pop());applyState(s);toast('Redone.')}
+let mode='none',cSrc=null,plSt=null,selNode=null;
+function draw(){svg.querySelectorAll('path').forEach(p=>p.remove());E.forEach((e,i)=>{const d=buildD(e);if(!d)return;const h=document.createElementNS(svgNS,'path');h.setAttribute('d',d);h.className.baseVal='hit';h.dataset.i=i;h.addEventListener('click',ev=>{ev.stopPropagation();wireClick(ev,i)});svg.appendChild(h);const p=document.createElementNS(svgNS,'path');p.setAttribute('d',d);p.className.baseVal='vis';p.setAttribute('stroke',e.d?'#bbb':'#888');p.setAttribute('stroke-width',e.d?'0.8':'1');p.setAttribute('fill','none');if(e.d)p.setAttribute('stroke-dasharray','3 2');p.setAttribute('marker-end',e.d?'url(#ad)':'url(#as)');p.dataset.i=i;p.addEventListener('click',ev=>{ev.stopPropagation();wireClick(ev,i)});svg.appendChild(p)});showBP()}
+draw();
+function wireClick(ev,idx){if(mode==='del'){pushU();E.splice(idx,1);draw();toast('Removed.')}else if(mode==='toggle'){pushU();E[idx].d=!E[idx].d;draw();toast(E[idx].d?'Dashed':'Solid')}else if(mode==='bend'){pushU();const cr=canvas.getBoundingClientRect();const x=Math.round((ev.clientX-cr.left)/scale);const y=Math.round((ev.clientY-cr.top)/scale);E[idx].w.push({x,y});draw();toast('Breakpoint added.')}}
+function setMode(m){mode=m;document.querySelector('.frame').classList.toggle('connect-mode',m==='connect');document.querySelectorAll('.tb button[id^="btn-"]').forEach(b=>{if(!['btn-snap','btn-save','btn-addcard','btn-undo','btn-redo'].includes(b.id))b.classList.remove('active')});const btn=document.getElementById('btn-'+m);if(btn)btn.classList.add('active');if(m!=='connect'&&cSrc){NE[cSrc].classList.remove('connect-source');cSrc=null}if(m!=='edit'){closePanel();if(selNode){NE[selNode].classList.remove('selected');selNode=null}}plSt=null;Object.values(NE).forEach(el=>{el.style.cursor=(m==='move'||m==='none')?'grab':m==='connect'?'crosshair':'pointer'});showBP()}
+function addNewCard(){pushU();const id='c'+Date.now();const x=snp((-tx/scale)+300);const y=snp((-ty/scale)+250);aN(id,'New Card','screen',x,y);mkC(N[N.length-1]);toast('Card added.');setMode('edit');openPanel(id)}
+function delCard(id){const i=N.findIndex(n=>n.id===id);if(i<0)return;NE[id].remove();delete NE[id];N.splice(i,1);for(let j=E.length-1;j>=0;j--)if(E[j].f===id||E[j].t===id)E.splice(j,1);draw();toast('Deleted.')}
+const BGC=['#4169E1','#E74C3C','#FFD93D','#6BC76B','#FFB6C1','#9B59B6','#FF6B8A','#48C9B0','#F39C12','#95A5A6','#2C3E50','#1ABC9C'];
+const TXC=['#ffffff','#1a1a1a','#333333'];
+(function(){const bg=document.getElementById('bg-colors');BGC.forEach(c=>{const s=document.createElement('div');s.className='cs';s.style.background=c;s.dataset.c=c;s.onclick=()=>setBg(c);bg.appendChild(s)});const tx=document.getElementById('txt-colors');TXC.forEach(c=>{const s=document.createElement('div');s.className='ts';s.style.background=c;s.dataset.c=c;s.onclick=()=>setFg(c);tx.appendChild(s)})})();
+function openPanel(id){const n=N.find(x=>x.id===id);if(!n)return;selNode=id;Object.values(NE).forEach(el=>el.classList.remove('selected'));NE[id].classList.add('selected');document.getElementById('panel-title').textContent='Edit';document.getElementById('inp-label').value=n.label;const fs=n.fs||10;document.getElementById('inp-fs').value=fs;document.querySelectorAll('#bg-colors .cs').forEach(s=>s.classList.toggle('active',n.bg===s.dataset.c));document.querySelectorAll('#txt-colors .ts').forEach(s=>s.classList.toggle('active',n.fg===s.dataset.c));document.getElementById('panel').classList.add('visible')}
+function closePanel(){document.getElementById('panel').classList.remove('visible')}
+function onLabelChange(){if(!selNode)return;N.find(x=>x.id===selNode).label=document.getElementById('inp-label').value;refC(N.find(x=>x.id===selNode))}
+function onFsChange(){if(!selNode)return;const n=N.find(x=>x.id===selNode);const v=parseFloat(document.getElementById('inp-fs').value);if(isNaN(v)||v<1)return;n.fs=v;refC(n)}
+function setBg(c){if(!selNode)return;N.find(x=>x.id===selNode).bg=c;refC(N.find(x=>x.id===selNode));document.querySelectorAll('#bg-colors .cs').forEach(s=>s.classList.toggle('active',s.dataset.c===c))}
+function setFg(c){if(!selNode)return;N.find(x=>x.id===selNode).fg=c;refC(N.find(x=>x.id===selNode));document.querySelectorAll('#txt-colors .ts').forEach(s=>s.classList.toggle('active',s.dataset.c===c))}
+
+/* ─── Unified pointer handling (mouse + touch) ─── */
+let dragNode=null,dox=0,doy=0,pan=false,psx,psy,dragBP=null;
+
+function getPointerXY(e){
+  if(e.touches&&e.touches.length)return{cx:e.touches[0].clientX,cy:e.touches[0].clientY};
+  return{cx:e.clientX,cy:e.clientY};
+}
+
+function handleDown(e){
+  const isTouch=!!e.touches;
+  const{cx,cy}=getPointerXY(e);
+  if(e.target&&e.target.closest&&e.target.closest('.panel'))return;
+  const card=e.target&&e.target.closest?e.target.closest('.card'):null;
+  if(card&&(mode==='delcard'||mode==='del')){e.preventDefault();pushU();delCard(card.dataset.id);return}
+  const bp=e.target&&e.target.closest?e.target.closest('.bp'):null;
+  if(bp&&(mode==='move'||mode==='none'||mode==='addbp'||mode==='bend')){e.preventDefault();pushU();dragBP={ei:+bp.dataset.ei,wi:+bp.dataset.wi,el:bp};bp.classList.add('dragging');return}
+  const port=e.target&&e.target.closest?e.target.closest('.port'):null;
+  if(port&&(mode==='portlink'||mode==='connect')){const nid=port.dataset.nid,side=port.dataset.side;if(!plSt){plSt={nid,side};NE[nid].classList.add('connect-source');toast('Now click target port.')}else{if(nid!==plSt.nid){pushU();aE(plSt.nid,nid,false,plSt.side,side);draw();toast('Linked.')}NE[plSt.nid].classList.remove('connect-source');plSt=null}return}
+  if(card&&mode==='edit'){openPanel(card.dataset.id);return}
+  if(card&&mode==='connect'){const id=card.dataset.id;if(!cSrc){cSrc=id;plSt={nid:id,side:'a'};card.classList.add('connect-source');toast('Now click a port on the target card.')}else if(id!==cSrc){pushU();aE(cSrc,id,false,plSt?plSt.side:'a','a');draw();toast('Linked.');NE[cSrc].classList.remove('connect-source');cSrc=null;plSt=null}return}
+  if(card&&(mode==='move'||mode==='none')){e.preventDefault();dragNode=N.find(n=>n.id===card.dataset.id);if(!dragNode)return;card.classList.add('dragging');dox=(cx-card.getBoundingClientRect().left)/scale;doy=(cy-card.getBoundingClientRect().top)/scale;return}
+  const isWire=e.target&&(e.target.tagName==='path'||e.target.tagName==='PATH');
+  if(!card&&!port&&!bp&&!isWire){if(mode!=='none'&&mode!=='move'&&mode!=='bend'){setMode('none')}closePanel();if(selNode){NE[selNode]&&NE[selNode].classList.remove('selected');selNode=null}pan=true;psx=cx-tx;psy=cy-ty;document.querySelector('.frame').style.cursor='grabbing'}
+}
+
+function handleMove(e){
+  const{cx,cy}=getPointerXY(e);
+  if(dragBP){e.preventDefault();const cr=canvas.getBoundingClientRect();let x=Math.round((cx-cr.left)/scale);let y=Math.round((cy-cr.top)/scale);if(snapOn){x=snp(x);y=snp(y)}E[dragBP.ei].w[dragBP.wi]={x,y};draw();const nb=bpEls.find(el=>+el.dataset.ei===dragBP.ei&&+el.dataset.wi===dragBP.wi);if(nb){nb.classList.add('dragging');dragBP.el=nb}return}
+  if(dragNode){e.preventDefault();const cr=canvas.getBoundingClientRect();let x=Math.round((cx-cr.left)/scale-dox);let y=Math.round((cy-cr.top)/scale-doy);if(snapOn){x=snp(x);y=snp(y)}dragNode.x=x;dragNode.y=y;NE[dragNode.id].style.left=x+'px';NE[dragNode.id].style.top=y+'px';draw()}
+  if(pan){e.preventDefault();tx=cx-psx;ty=cy-psy;applyT()}
+}
+
+function handleUp(){
+  if(dragBP){if(dragBP.el)dragBP.el.classList.remove('dragging');dragBP=null}
+  if(dragNode){NE[dragNode.id].classList.remove('dragging');dragNode=null}
+  if(pan){pan=false;document.querySelector('.frame').style.cursor=''}
+}
+
+/* Mouse events */
+document.querySelector('.frame').addEventListener('mousedown',handleDown);
+window.addEventListener('mousemove',handleMove);
+window.addEventListener('mouseup',handleUp);
+
+/* Touch events */
+document.querySelector('.frame').addEventListener('touchstart',handleDown,{passive:false});
+window.addEventListener('touchmove',handleMove,{passive:false});
+window.addEventListener('touchend',handleUp);
+
+document.querySelector('.frame').addEventListener('dblclick',e=>{const bp=e.target.closest('.bp');if(bp&&(mode==='move'||mode==='none'||mode==='addbp'||mode==='bend')){pushU();E[+bp.dataset.ei].w.splice(+bp.dataset.wi,1);draw();toast('Breakpoint removed.')}});
+canvas.addEventListener('mouseover',e=>{const c=e.target.closest('.card');if(c&&mode==='connect'&&cSrc&&c.dataset.id!==cSrc)c.classList.add('connect-hover');if(c&&(mode==='delcard'||mode==='del'))c.classList.add('del-hover')});
+canvas.addEventListener('mouseout',e=>{const c=e.target.closest('.card');if(c){c.classList.remove('connect-hover');c.classList.remove('del-hover')}});
+
+let scale=1,tx=0,ty=0;
+function applyT(){canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`}
+function zoomFit(){const frame=document.querySelector('.frame');const W=frame.clientWidth,H=frame.clientHeight;const isSmall=W<600;const tbW=isSmall?0:48;const tbH=isSmall?64:0;const pad=isSmall?30:60;const minX=-80,maxX=1520,minY=-100,maxY=1080;const cw=maxX-minX,ch=maxY-minY;scale=Math.min((W-tbW-pad*2)/cw,(H-tbH-pad*2)/ch,1);scale=Math.max(0.1,scale);tx=(W-tbW)/2-(minX+cw/2)*scale;ty=(H-tbH)/2-(minY+ch/2)*scale;applyT()}
+function zoomIn(){scale=Math.min(3,scale+.08);applyT()}
+function zoomOut(){scale=Math.max(.1,scale-.08);applyT()}
+requestAnimationFrame(()=>requestAnimationFrame(zoomFit));
+
+/* Re-fit on resize */
+let resizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(zoomFit,150)});
+
+document.querySelector('.frame').addEventListener('wheel',e=>{if(e.target.closest('.tb,.panel,.legend,.zc'))return;e.preventDefault();if(e.ctrlKey||e.metaKey){const old=scale;scale=Math.max(.1,Math.min(3,scale+(e.deltaY>0?-.03:.03)));tx=e.clientX-(e.clientX-tx)*(scale/old);ty=e.clientY-(e.clientY-ty)*(scale/old)}else{tx-=e.deltaX;ty-=e.deltaY}applyT()},{passive:false});
+
+/* Pinch-to-zoom */
+let lastPinchDist=0;
+document.querySelector('.frame').addEventListener('touchstart',e=>{if(e.touches.length===2){lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)}},{passive:true});
+document.querySelector('.frame').addEventListener('touchmove',e=>{if(e.touches.length===2){e.preventDefault();const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(lastPinchDist>0){const mid={x:(e.touches[0].clientX+e.touches[1].clientX)/2,y:(e.touches[0].clientY+e.touches[1].clientY)/2};const old=scale;const delta=(d-lastPinchDist)*0.005;scale=Math.max(.1,Math.min(3,scale+delta));tx=mid.x-(mid.x-tx)*(scale/old);ty=mid.y-(mid.y-ty)*(scale/old);applyT()}lastPinchDist=d}},{passive:false});
+document.querySelector('.frame').addEventListener('touchend',e=>{if(e.touches.length<2)lastPinchDist=0},{passive:true});
+
+window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;const S=20;let h=true;switch(e.key){case'ArrowUp':ty+=S;break;case'ArrowDown':ty-=S;break;case'ArrowLeft':tx+=S;break;case'ArrowRight':tx-=S;break;default:h=false}if(h){e.preventDefault();applyT()}if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();undo()}if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();redo()}});
+(function(){const tip=document.getElementById('tip');document.querySelectorAll('[data-tip]').forEach(function(el){el.addEventListener('mouseenter',function(){tip.textContent=this.dataset.tip;tip.style.visibility='hidden';tip.classList.add('show');const r=this.getBoundingClientRect();const isZoom=this.closest('.zc');tip.style.top=Math.round(r.top+r.height/2-tip.offsetHeight/2)+'px';if(isZoom){tip.style.left=Math.round(r.right+10)+'px';}else{tip.style.left=Math.round(r.left-tip.offsetWidth-10)+'px';}tip.style.visibility='';});el.addEventListener('mouseleave',function(){tip.classList.remove('show')});el.addEventListener('mousedown',function(){tip.classList.remove('show')});});})();
+function toggleSnap(){snapOn=!snapOn;document.getElementById('btn-snap').classList.toggle('snap-on',snapOn);document.getElementById('grid').classList.toggle('visible',snapOn);if(snapOn){N.forEach(n=>{n.x=snp(n.x);n.y=snp(n.y);NE[n.id].style.left=n.x+'px';NE[n.id].style.top=n.y+'px'});draw()}}
+function getSt(){return{nodes:N.map(n=>({id:n.id,label:n.label,type:n.type,x:n.x,y:n.y,bg:n.bg,fg:n.fg,fontSize:n.fs})),edges:E.map(e=>({from:e.f,to:e.t,dashed:e.d,fromPort:e.fp==='a'?'auto':e.fp,toPort:e.tp==='a'?'auto':e.tp,waypoints:e.w}))}}
+function saveDesign(){try{localStorage.setItem('ia-d',JSON.stringify(getSt()));document.getElementById('btn-save').classList.add('save-ok');setTimeout(()=>document.getElementById('btn-save').classList.remove('save-ok'),1500);toast('Saved!')}catch(x){toast('Failed.')}}
+function exportAll(){const j=JSON.stringify(getSt(),null,2);navigator.clipboard.writeText(j).then(()=>toast('JSON copied!')).catch(()=>{const t=document.createElement('textarea');t.value=j;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Copied!')})}
+function resetLayout(){N.forEach(n=>{const el=NE[n.id];if(el)el.remove();delete NE[n.id]});N.length=0;E.length=0;ON.forEach(o=>{N.push({...o});mkC(N[N.length-1])});OE.forEach(e=>E.push(JSON.parse(JSON.stringify(e))));draw();closePanel();toast('Reset.')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+try{if(localStorage.getItem('ia-d')){const j=localStorage.getItem('ia-d');const d=JSON.parse(j);N.forEach(n=>{const el=NE[n.id];if(el)el.remove();delete NE[n.id]});N.length=0;E.length=0;d.nodes.forEach(s=>{N.push({id:s.id,label:s.label,type:s.type,x:s.x,y:s.y,ox:s.x,oy:s.y,bg:s.bg,fg:s.fg,fs:s.fontSize});mkC(N[N.length-1])});d.edges.forEach(e=>E.push({f:e.from,t:e.to,d:!!e.dashed,fp:e.fromPort==='auto'?'a':e.fromPort,tp:e.toPort==='auto'?'a':e.toPort,w:e.waypoints||[]}));draw()}}catch(x){}
+</script>
+</body>
+</html>
+
+        <script type="module">
+            let height = 0
+
+            function sendEmbedHeight() {
+                window.parent.postMessage({
+                    embedHeight: height
+                }, "*")
+            }
+
+            const observer = new ResizeObserver((entries) => {
+                if (entries.length !== 1) return
+                const entry = entries[0]
+                if (entry.target !== document.body) return
+
+                height = entry.contentRect.height
+                sendEmbedHeight()
+            })
+
+            observer.observe(document.body)
+
+            window.addEventListener("message", (event) => {
+                if (event.source !== window.parent) return
+                if (event.data !== "getEmbedHeight") return
+                sendEmbedHeight()
+            })
+        </script>
+    <body>
+</html>
