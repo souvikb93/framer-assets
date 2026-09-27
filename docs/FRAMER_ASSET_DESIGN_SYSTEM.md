@@ -174,6 +174,13 @@ from those sizes, and restepping the text reflows the lanes. They follow the wei
 radius rules like everything else; only the size remap is skipped. Any future fixed-geometry
 diagram gets the same treatment, and says so in a comment at the top of the file.
 
+**Two files may skip the height lock.** The blueprints share one stylesheet by design,
+and a stylesheet can only carry one `min-height` — but the as-is renders at 820 and the
+to-be at 678, because they hold different amounts of content. A shared lock would be wrong
+for one of them, so neither declares one and the Framer node holds the height instead. The
+IA editor skips it too: it is a full-height canvas tool on `100vh`, which resolves to
+whatever the node is set to. Every other asset locks its own desktop height.
+
 Before this rule the assets used sixteen different radii (2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14,
 16, 18, 20, 22, 999). Anything not on the list above is drift.
 
