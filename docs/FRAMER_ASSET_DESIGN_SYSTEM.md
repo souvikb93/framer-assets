@@ -188,6 +188,14 @@ Before this rule the assets used sixteen different radii (2, 3, 4, 5, 6, 7, 8, 9
 
 ## 4. Colour
 
+**Green has two values, and they are not interchangeable.** `#1E8A4C` is the fill and the
+large-display green — white on it, or a 40px figure of it on white, both clear their floor.
+It fails as small text on any green tint: 4.12 on `#F2FAF5`, 3.68 on `#D6F2E1`. Small text on
+a green tint uses `#17703E` — 5.77 and 5.15 on those two fills. The same trap exists for any
+colour used both as a fill and as a label on its own tint: check the label pair, not the fill.
+
+
+
 Four families, defined once per project:
 
 | token | job |
