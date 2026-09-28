@@ -48,7 +48,7 @@ body{display:block!important}
 .act b{font-weight:600;color:var(--ink)}
 @media (max-width:760px){.canvas{overflow-x:auto;-webkit-overflow-scrolling:touch}.grid,.tp,.foot{min-width:880px}}
 @media (max-width:440px){.canvas{padding:16px}}
-@media (min-width:900px){body{min-height:744px}}
+@media (min-width:900px){body{min-height:747px}}
 @media (prefers-reduced-motion:reduce){.bar,.head{transition:none}}
 </style></head><body>
 <div class="app">
@@ -80,17 +80,20 @@ const GROUPS=[
     {ph:'disc',segs:[['FR',5,7,'France',4],['DE',7,9,'Germany',4],['ES',9,10.5,'Spain',3],['IT',10.5,12,'Italy',3],['NL',12,13,'Netherlands',2]]},
     {ph:'disc',dash:1,segs:[['Follow-Up',13,16,'Follow-ups across the five markets',0]]}]],
   ['UK & Ireland','UK, Ireland · 6 interviews',[
-    {ph:'disc',segs:[['UK',6,9.5,'United Kingdom',4],['IE',9.5,11,'Ireland',2]]}]],
+    {ph:'disc',segs:[['UK',6,9.5,'United Kingdom',4],['IE',9.5,11,'Ireland',2]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',11,14,'Follow-ups on policy exceptions',0]]}]],
   ['Latin America','Brazil, Mexico · 8 interviews',[
     {ph:'disc',segs:[['BR',10,13.5,'Brazil',5],['MX',13.5,16,'Mexico',3]]},
     {ph:'disc',dash:1,segs:[['Follow-Up',16,19,'Carrier and logistics follow-ups',0]]}]],
   ['India','India · 6 interviews',[
-    {ph:'disc',segs:[['India',14,18,'India',6]]}]],
+    {ph:'disc',segs:[['India',14,18,'India',6]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',18,21,'Return-facility follow-ups',0]]}]],
   ['Asia Pacific & Japan','Japan, China, Singapore · 9',[
     {ph:'disc',segs:[['JP',15,17.5,'Japan',4],['CN',17.5,19.5,'China',3],['SG',19.5,21,'Singapore',2]]},
     {ph:'disc',dash:1,segs:[['Follow-Up',21,24,'Translator-supported follow-ups',0]]}]],
   ['Australia & NZ','Australia, New Zealand · 5',[
-    {ph:'disc',segs:[['AU',18,20.5,'Australia',3],['NZ',20.5,22,'New Zealand',2]]}]]]],
+    {ph:'disc',segs:[['AU',18,20.5,'Australia',3],['NZ',20.5,22,'New Zealand',2]]},
+    {ph:'disc',dash:1,segs:[['Follow-Up',22,25,'Carrier-integration follow-ups',0]]}]]]],
  ['Programme Workstreams',[
   ['Synthesis','Rolling, per region',[
     {ph:'syn',segs:[['Per-Region Readouts',8,17,'Gaps and commonalities, region by region',0],['Cross-Region',17,25,'Three insights, three opportunity areas',0]]}]],
