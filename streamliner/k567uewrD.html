@@ -70,9 +70,9 @@ const F=[['Finding 01','Carrier Booking Was Mostly Manual','Agents re-typed orde
 const I=[['Insight 01','Manual Dependencies Limit Autonomy',['Customers cannot start or edit a request','Agents wait on others for routine steps'],[0,3]],
 ['Insight 02','Fragmented Systems Increase Operational Effort',['Data re-entered across five or more tools','Policy and eligibility checked from memory'],[0,2]],
 ['Insight 03','Inconsistent Rules Reduce Transparency',['No single status for a case','Timelines and triggers vary by region'],[1,2]]];
-const O=[['Opportunity 01','Enable Greater Autonomy','How might we let people move a request forward without waiting on others?'],
-['Opportunity 02','Support Better Decision-Making','How might we bring the right data and rules to the moment of decision?'],
-['Opportunity 03','Make Progress More Predictable','How might we make every step, timeline and trigger visible up front?']];
+const O=[['Opportunity 01','Enable Greater Autonomy','How might we reduce manual dependencies so customers and agents can move requests forward themselves?'],
+['Opportunity 02','Augment Human Decision-Making','How might we bring the right data, rules, and context together so agents can make better decisions?'],
+['Opportunity 03','Clear and Predictable Communication','How might we make every step, timeline, and trigger clear and visible to everyone involved?']];
 const $=i=>document.getElementById(i);
 $('F').innerHTML=F.map((f,k)=>`<button class="c f" data-n="f${k}"><em>${f[0]}</em><b>${f[1]}</b><small>${f[2]}</small></button>`).join('');
 $('I').innerHTML=I.map((x,k)=>`<button class="c i" data-n="i${k}"><em>${x[0]}</em><b>${x[1]}</b><ul>${x[2].map(l=>`<li>${l}</li>`).join('')}</ul></button>`).join('');
