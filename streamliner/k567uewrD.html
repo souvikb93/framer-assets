@@ -11,13 +11,13 @@ html,body{width:100%}body{display:block!important}body>div{width:100%}
 html,body{background:transparent;font-family:'Uncut Sans',-apple-system,sans-serif;color:#121212;-webkit-font-smoothing:antialiased}
 .wrap{width:100%;max-width:1200px;margin:0 auto;padding:12px}
 .stage{background:transparent;border:0;border-radius:0;padding:2px 2px 6px;position:relative;display:flex;flex-direction:column}
-svg.lk{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+svg.lk{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
 svg.lk path{fill:none;stroke:#0672CB;stroke-width:1.75;stroke-linecap:round;opacity:0;stroke-dasharray:100 100;stroke-dashoffset:100}
 svg.lk path.hot{opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1),opacity .15s linear}
 .band{display:flex;align-items:baseline;gap:10px;position:relative;z-index:1;margin-bottom:12px}
 .band em{font-style:normal;font-size:var(--t-caption);font-weight:600;letter-spacing:.01em;color:#696970;background:#fff;padding-right:8px;white-space:nowrap}
 .band hr{flex:1;border:0;border-top:1px solid #E5E5E5}
-.row{display:grid;gap:14px;position:relative;z-index:1}
+.row{display:grid;gap:14px;position:relative;z-index:3}
 .r4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .r3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .gap{height:70px}
@@ -27,7 +27,7 @@ svg.lk path.hot{opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset .6s c
 .c b{font-weight:600;letter-spacing:-.01em;color:#121212;transition:color .3s}
 .c small{color:#696970;transition:color .3s}
 .dim{opacity:.68}
-.c.on{border-color:#0672CB;box-shadow:0 0 0 1px #0672CB,0 8px 20px rgba(6,114,203,.12);z-index:3}
+.c.on{border-color:#0672CB;box-shadow:0 0 0 1px #0672CB,0 8px 20px rgba(6,114,203,.12);z-index:4}
 .f b{font-size:var(--t-body);line-height:1.3;margin-bottom:5px}
 .f small{font-size:var(--t-caption);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .i b{font-size:var(--t-title);line-height:1.3;margin-bottom:9px}
