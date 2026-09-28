@@ -141,7 +141,7 @@ renders. **450 and 300 are not in the system either** — 300 only ever appeared
 
 | element | case |
 |---|---|
-| card title, stat label, tab label | **Title Case** — matches every Framer H4/H5 on the page |
+| card title, stat label, **any control label** — tab, toggle, segmented control, legend key, chip | **Title Case** — matches every Framer H4/H5 on the page |
 | body, captions, supporting lines | sentence case |
 | acronyms | stay capitalised because they are acronyms (CRE, SODS, SFDC) |
 
@@ -455,6 +455,13 @@ if the colour is wrong the group is wrong, which is the useful failure.
 ---
 
 ## 12. The toggle
+
+**Labels are Title Case.** A toggle label is a control name, not a sentence — "Region Profile A",
+not "Region profile A". This is the same rule as §3 Case; it is repeated here because the toggle
+is built from a data array and it is easy to type the array in sentence case without noticing.
+The `aria-label` on the tablist follows the visible label, so the screen-reader name and the
+printed name match.
+
 
 Every asset that switches between two or more views uses the same control. Not a
 segmented track, not a row of buttons — one white capsule with a navy pill that
