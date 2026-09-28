@@ -42,12 +42,12 @@ svg.lk path.flow{stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;poi
 svg.lk path.gone{stroke:transparent}
 @media (max-width:820px){.canvas{grid-template-columns:1fr;gap:16px}svg.lk{display:none}.src{display:none}.row{grid-template-columns:28px 1fr 80px}}
 @media (prefers-reduced-motion:reduce){.row .fill{display:none}.out.on{transform:none}}
-@media (max-width:440px){.wrap{padding:4px}.row{padding:10px 10px;gap:10px}.outs{gap:10px}.out{padding:10px 12px}}@media (min-width:900px){body{min-height:290px}}</style></head><body><div class="wrap"><div class="canvas" id="cv"><div class="chain" id="chain"></div><svg class="lk" id="lk"></svg><div class="outs" id="outs"><div class="out a" data-o="a"><b>Auto-approve</b><small>Straight to Process &amp; Track</small></div><div class="out r" data-o="r"><b>Auto-reject</b><small>Reason saved, agent notified</small></div><div class="out m" data-o="m"><b>Agent Review</b><small>Opens in Verify &amp; Review UI</small></div></div></div></div><script>const S=[
- {n:'Validate CRE request',src:'CRE'},
- {n:'Check policy period',src:'RIMS · P&T'},
- {n:'Get order details',src:'SODS'},
- {n:'Get CRE history',src:'P&T'},
- {n:'Price match · partial refund',src:'Rules'}];
+@media (max-width:440px){.wrap{padding:4px}.row{padding:10px 10px;gap:10px}.outs{gap:10px}.out{padding:10px 12px}}@media (min-width:900px){body{min-height:290px}}</style></head><body><div class="wrap"><div class="canvas" id="cv"><div class="chain" id="chain"></div><svg class="lk" id="lk"></svg><div class="outs" id="outs"><div class="out a" data-o="a"><b>Auto-Approve</b><small>Straight to Process &amp; Track</small></div><div class="out r" data-o="r"><b>Auto-Reject</b><small>Reason saved, agent notified</small></div><div class="out m" data-o="m"><b>Agent Review</b><small>Opens in Verify &amp; Review UI</small></div></div></div></div><script>const S=[
+ {n:'Validate CRE Request',src:'CRE'},
+ {n:'Check Policy Period',src:'RIMS · P&T'},
+ {n:'Get Order Details',src:'SODS'},
+ {n:'Get CRE History',src:'P&T'},
+ {n:'Price Match · Partial Refund',src:'Rules'}];
 const C=[{s:'ppppp',o:'a'},{s:'fssss',o:'r'},{s:'pppgg',o:'m'}];
 const IC={chk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>',
  p:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
