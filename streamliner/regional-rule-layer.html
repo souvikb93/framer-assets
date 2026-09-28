@@ -59,7 +59,7 @@ body{display:block!important}body>div{width:100%}
 </style></head><body>
 <div class="wrap">
   <div class="top">
-    <div class="pick" id="pick" role="tablist" aria-label="Region profile"><span class="pill" id="pill"></span></div>
+    <div class="pick" id="pick" role="tablist" aria-label="Region Profile"><span class="pill" id="pill"></span></div>
     <div class="note">
       <span class="key"><i style="background:#F6F9FC;border:1px solid #E7EFF6"></i>Same in both profiles</span>
       <span class="key"><i style="background:#F6EFE6;border:1px solid #E8D6BC"></i>Varies by region</span>
@@ -67,7 +67,7 @@ body{display:block!important}body>div{width:100%}
   </div>
 
   <div class="layer core">
-    <div class="lname"><b>Global core</b><small>Identical in every country</small></div>
+    <div class="lname"><b>Global Core</b><small>Identical in every country</small></div>
     <div class="mod"><b>Create &amp; Edit</b><small>Standard CRE case</small></div>
     <div class="mod"><b>Verify &amp; Review</b><small>Rule-based decision</small></div>
     <div class="mod"><b>Return Method</b><small>Logistics &amp; shipping</small></div>
@@ -78,19 +78,19 @@ body{display:block!important}body>div{width:100%}
   <div class="join"><div></div><div></div><div></div><div></div><div></div><div></div></div>
 
   <div class="layer rules" id="rules">
-    <div class="lname"><b>Regional rule layer</b><small>Configured per country, not rebuilt</small></div>
+    <div class="lname"><b>Regional Rule Layer</b><small>Configured per country, not rebuilt</small></div>
   </div>
 
 </div>
 <script>
 const M=[
- [["Request types",["Credit · Return · Exchange","Credit · Return · Exchange"]],["Policy check",["Shared policy rules","Shared policy rules"]]],
- [["Auto-decision rules",["Policy + margin + history","Policy + margin + history"]],["Exceptions",["Routed to care agent","Routed to care agent"]]],
- [["Carrier booking",["Integrated with carrier","Manual portal / email"]],["Return mode",["Carrier pickup","Drop-off at return facility"]]],
- [["Customer updates",["Automated status","Automated status"]],["Currency",["Local","Local"]]],
- [["Refund trigger",["At pickup","At warehouse receipt"]],["Expected timeline",["5–7 days","2–4 weeks"]]]
+ [["Request Types",["Credit · Return · Exchange","Credit · Return · Exchange"]],["Policy Check",["Shared policy rules","Shared policy rules"]]],
+ [["Auto-Decision Rules",["Policy + margin + history","Policy + margin + history"]],["Exceptions",["Routed to care agent","Routed to care agent"]]],
+ [["Carrier Booking",["Integrated with carrier","Manual portal / email"]],["Return Mode",["Carrier pickup","Drop-off at return facility"]]],
+ [["Customer Updates",["Automated status","Automated status"]],["Currency",["Local","Local"]]],
+ [["Refund Trigger",["At pickup","At warehouse receipt"]],["Expected Timeline",["5–7 days","2–4 weeks"]]]
 ];
-const PICKS=[["0","Region profile A"],["1","Region profile B"]];
+const PICKS=[["0","Region Profile A"],["1","Region Profile B"]];
 const $=id=>document.getElementById(id);
 const R=$('rules');
 const cols=M.map(()=>{const d=document.createElement('div');d.className='mod';R.appendChild(d);return d});
