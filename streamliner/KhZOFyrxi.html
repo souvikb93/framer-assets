@@ -90,7 +90,7 @@ body{display:block!important}body>div{width:100%}
   var wrap=document.getElementById('wrap'),rail=document.getElementById('rail'),trace=document.getElementById('trace');
   var branches=[].slice.call(rail.querySelectorAll('.branch'));
   var cards=[].slice.call(document.getElementById('flow').children);
-  var ORIGIN=2;                                  // the stem meets the rail at the middle dot
+  var ORIGIN=2;                                  /* the stem meets the rail at the middle dot */
   function centre(i){
     var r=rail.getBoundingClientRect(),d=branches[i].querySelector('.dot').getBoundingClientRect();
     return d.left-r.left+d.width/2;
