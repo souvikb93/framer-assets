@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tracka Architecture</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600&display=swap" rel="stylesheet">
+<style>
+:root{--t-display:40px;--t-title-lg:24px;--t-title:18px;--t-body:14px;--t-caption:12px;--t-micro:10px;--r-surface:24px;--r-card:16px;--r-inner:12px;--r-node:8px;--r-xs:4px;--r-pill:999px}
+@media (max-width:1023px){:root{--t-display:30px;--t-title-lg:18px;--t-title:16px}}
+@media (max-width:767px){:root{--t-display:22px;--t-title-lg:16px;--t-title:15px}}
+:root{--ink:#151515;--ink2:#4A4A4A;--ink3:#6B665E;--line:#E6E4DF;--line2:#D6D3CC;--surface:#F4F3F0;--surface2:#EFEFED;--brand:#FF5A2F;--brand-deep:#CC4826}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100%;overflow:hidden;background:transparent;font-family:'Satoshi','Helvetica Neue',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.app{width:100vw;max-width:1200px;padding:2px;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;padding:2px}
+.pick{position:relative;flex:none;display:inline-flex;align-items:center;background:var(--surface2);padding:3px;border-radius:var(--r-inner)}
+.opt{font:inherit;position:relative;z-index:1;display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:10px;border:0;background:transparent;cursor:pointer;color:var(--ink3);font-size:var(--t-body);font-weight:500;white-space:nowrap;transition:color .2s}
+.opt i{display:none;width:7px;height:7px;border-radius:50%;flex:none}
+.opt:hover{color:var(--ink)}
+.opt.on{color:var(--ink);font-weight:600}
+.opt.on i{display:block;background:var(--brand);animation:bl 1.3s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,90,47,.45)}50%{opacity:.45;box-shadow:0 0 0 4px rgba(255,90,47,0)}}
+.opt:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.pill{position:absolute;top:3px;left:3px;height:34px;border-radius:10px;background:#fff;border:1px solid var(--line);box-shadow:0 1px 2px rgba(21,21,21,.06);z-index:0;transition:transform .42s cubic-bezier(.34,1.24,.5,1),width .42s cubic-bezier(.34,1.24,.5,1)}
+.canvas{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:var(--r-surface);padding:24px;box-shadow:0 1px 2px rgba(21,21,21,.03)}
+svg.map{display:block;width:100%;height:auto;overflow:visible}
+.lab{font-family:'Satoshi','Helvetica Neue',sans-serif;pointer-events:none;user-select:none}
+.read{display:flex;align-items:center;gap:10px;margin-top:16px;height:28px;font-size:var(--t-body);line-height:21px;color:var(--ink2);white-space:nowrap;overflow:hidden;min-width:0}
+.read i{flex:none;width:10px;height:10px;border-radius:50%;background:var(--sw,#C9C6BF);transition:background .3s}
+.read b{flex:none;font-weight:600;color:var(--ink)}
+.read span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.read code{margin-left:auto;flex:none;font:500 var(--t-caption)/20px 'Satoshi','Helvetica Neue',sans-serif;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-node);padding:2px 9px;max-width:48%;overflow:hidden;text-overflow:ellipsis}
+.steps{margin-top:18px;padding-top:22px;border-top:1px solid var(--line);display:flex;flex-wrap:nowrap;align-items:flex-start;min-height:56px}
+.s{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 7px;font-size:var(--t-micro);font-weight:500;line-height:1.15;color:var(--ink3);white-space:nowrap;text-align:center;transition:color .3s}
+.s .dot{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid #C9C6BF;background:#fff;display:grid;place-items:center;transition:all .3s}
+.s.done{color:var(--ink2)}
+.s.done .dot{background:var(--brand);border-color:var(--brand)}
+.s.done .dot::after{content:"";width:7px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.s.now{color:var(--ink);font-weight:600}
+.s.now .dot{border-color:var(--brand);border-width:2.5px;background:#fff}
+.s.now .dot::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--brand);animation:pu 1.4s ease-in-out infinite}
+@keyframes pu{50%{transform:scale(.5);opacity:.6}}
+.sep{position:relative;overflow:hidden;flex:1 1 0;min-width:8px;height:2px;background:var(--line2);margin:9px 0 0;border-radius:var(--r-xs)}
+.sep::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--f,0%);background:var(--brand);border-radius:var(--r-xs)}
+@media (min-width:900px){body{min-height:696px}}
+@media (max-width:760px){.top{flex-direction:column;align-items:stretch;gap:16px}.pick{align-self:stretch;overflow-x:auto;justify-content:flex-start}.canvas{overflow-x:auto;-webkit-overflow-scrolling:touch}.canvas>.map{width:900px;min-width:900px}.read{min-width:900px}.steps{min-width:900px;min-height:52px}}
+@media (max-width:440px){.opt{height:40px}.pill{height:40px}.canvas{padding:16px}}
+@media (prefers-reduced-motion:reduce){.s.now .dot::after{animation:none}.pill{transition:none}.opt.on i{animation:none}}
+</style></head><body>
+<div class="app">
+ <div class="top">
+  <div class="pick" id="pick" role="tablist" aria-label="Tracka feature"><span class="pill" id="pill"></span></div>
+ </div>
+ <div class="canvas" id="canvas">
+  <svg class="map" id="svg" viewBox="0 0 1372 600" role="img" aria-label="Tracka architecture: a request moves from the user through the React app in the browser, Supabase edge functions, auth and Postgres, and external APIs including Groq and Jina Reader"></svg>
+  <div class="read" id="read" aria-live="polite"><i></i><b></b><span></span><code></code></div>
+  <div class="steps" id="steps"></div>
+ </div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg',svg=document.getElementById('svg');
+const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+const BRAND='#FF5A2F',INK='#151515';
+const PAL={mod:'#FF5A2F',plat:'#151515',ai:'#CC4826',ext:'#8C8378',ppl:'#4A4A4A'};
+const GRP={user:'ppl',post:'ppl',onb:'mod',job:'mod',cv:'mod',ats:'mod',cl:'mod',parse:'plat',scrape:'plat',auth:'plat',proxy:'plat',db:'plat',groq:'ai',jina:'ext',fb:'ext'};
+const CO=id=>PAL[GRP[id]]||INK;
+const MIX=(hex,a)=>{const n=parseInt(hex.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255,m=v=>Math.round(v*a+255*(1-a));return '#'+((1<<24)+(m(r)<<16)+(m(g)<<8)+m(b)).toString(16).slice(1)};
+const NEU='#DCD9D2';
+const W=150;
+const N={
+ user:{x:70,y:340,r:40,t:'User'},
+ onb:{x:270,y:100,t:'Onboarding'},
+ job:{x:270,y:220,t:'Job Capture'},
+ cv:{x:270,y:340,t:'CV Builder'},
+ ats:{x:270,y:440,t:'ATS Scorer'},
+ cl:{x:270,y:540,t:'Cover Letter'},
+ parse:{x:800,y:100,t:'parse-cv'},
+ scrape:{x:800,y:220,t:'scrape-job'},
+ auth:{x:800,y:330,t:'Auth'},
+ proxy:{x:800,y:440,t:'groq-proxy'},
+ db:{x:800,y:540,t:'Postgres'},
+ fb:{x:1100,y:120,w:184,t:'Firecrawl · ScrapeGraph'},
+ jina:{x:1100,y:220,t:'Jina Reader'},
+ post:{x:1268,y:220,w:120,t:'Job Posting'},
+ groq:{x:1180,y:440,w:160,t:'Groq LLM'}};
+for(const id in N){const n=N[id];if(!n.r){n.w=n.w||W;n.h=40}n.col=CO(id);n.tint=MIX(n.col,.09)}
+const NAME={user:'User',onb:'Onboarding',job:'Job Capture',cv:'CV Builder',ats:'ATS Scorer',cl:'Cover Letter',parse:'parse-cv function',scrape:'scrape-job function',auth:'Supabase Auth',proxy:'groq-proxy function',db:'Postgres',fb:'Firecrawl · ScrapeGraph',jina:'Jina Reader',post:'Job posting',groq:'Groq'};
+const API={user:'Browser',onb:'pdf.js · client-side',job:'React · jobs store',cv:'React · resume editor',ats:'score-ats.ts · deterministic, no model call',cl:'React · letter editor',
+ parse:'POST /functions/v1/parse-cv · unpdf',scrape:'POST /functions/v1/scrape-job',auth:'supabase.auth.getUser(jwt)',proxy:'POST /functions/v1/groq-proxy',db:'Supabase Postgres · row-level security',
+ fb:'api.firecrawl.dev · scrapegraphai.com',jina:'GET r.jina.ai/<url>',post:'Any job board URL',groq:'api.groq.com · openai/gpt-oss-120b'};
+const P=(id,s)=>{const n=N[id];if(n.r)return s==='t'?[n.x,n.y-n.r]:s==='b'?[n.x,n.y+n.r]:s==='l'?[n.x-n.r,n.y]:[n.x+n.r,n.y];
+ return s==='t'?[n.x,n.y-n.h/2]:s==='b'?[n.x,n.y+n.h/2]:s==='l'?[n.x-n.w/2,n.y]:[n.x+n.w/2,n.y]};
+const E={
+ 'user-onb':[P('user','r'),[150,340],[150,100],P('onb','l')],
+ 'user-job':[P('user','r'),[150,340],[150,220],P('job','l')],
+ 'user-cv':[P('user','r'),P('cv','l')],
+ 'user-cl':[P('user','r'),[150,340],[150,540],P('cl','l')],
+ 'cv-ats':[P('cv','b'),P('ats','t')],
+ 'onb-parse':[P('onb','r'),P('parse','l')],
+ 'onb-proxy':[P('onb','r'),[560,100],[560,440],P('proxy','l')],
+ 'cv-proxy':[P('cv','r'),[560,340],[560,440],P('proxy','l')],
+ 'cl-proxy':[P('cl','r'),[560,540],[560,440],P('proxy','l')],
+ 'onb-db':[P('onb','r'),[600,100],[600,540],P('db','l')],
+ 'job-db':[P('job','r'),[600,220],[600,540],P('db','l')],
+ 'cv-db':[P('cv','r'),[600,340],[600,540],P('db','l')],
+ 'cl-db':[P('cl','r'),P('db','l')],
+ 'job-scrape':[P('job','r'),P('scrape','l')],
+ 'proxy-auth':[P('proxy','t'),P('auth','b')],
+ 'proxy-groq':[P('proxy','r'),P('groq','l')],
+ 'scrape-jina':[P('scrape','r'),P('jina','l')],
+ 'jina-post':[P('jina','r'),P('post','l')],
+ 'scrape-fb':[P('scrape','r'),[935,220],[935,120],P('fb','l')],
+ 'fb-post':[P('fb','r'),[1268,120],P('post','t')],
+ 'scrape-groq':[P('scrape','r'),[975,220],[975,330],[1180,330],P('groq','t')]};
+const HOPS={'job-scrape':[[560,220],[600,220]],'job-db':[[560,220]],'cv-db':[[560,340]],'onb-proxy':[[600,440]],'cv-proxy':[[600,440]],'cl-proxy':[[600,440]]};
+function rpath(p,hops,r=18){let d=`M${p[0][0]},${p[0][1]}`,prev=p[0];
+ const seg=(a,b)=>{if(hops&&a[1]===b[1]){const dir=Math.sign(b[0]-a[0]),hr=7;
+   hops.filter(h=>h[1]===a[1]&&(h[0]-a[0])*(h[0]-b[0])<0).sort((u,v)=>(u[0]-v[0])*dir).forEach(h=>{
+    d+=` L${h[0]-dir*hr},${a[1]} A${hr},${hr} 0 0 ${dir>0?1:0} ${h[0]+dir*hr},${a[1]}`})}
+  d+=` L${b[0]},${b[1]}`};
+ for(let i=1;i<p.length-1;i++){const b=p[i],c=p[i+1];
+  const l1=Math.hypot(b[0]-p[i-1][0],b[1]-p[i-1][1]),l2=Math.hypot(c[0]-b[0],c[1]-b[1]),rr=Math.min(r,l1/2,l2/2);
+  const s=[b[0]-(b[0]-p[i-1][0])/l1*rr,b[1]-(b[1]-p[i-1][1])/l1*rr],e=[b[0]+(c[0]-b[0])/l2*rr,b[1]+(c[1]-b[1])/l2*rr];
+  seg(prev,s);d+=` Q${b[0]},${b[1]} ${e[0]},${e[1]}`;prev=e}
+ seg(prev,p[p.length-1]);return d}
+const defs=mk('defs',{});
+defs.innerHTML='<filter id="lift" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#151515" flood-opacity="0.10"/></filter>'
+ +'<linearGradient id="flowg" gradientUnits="userSpaceOnUse"><stop id="gs0" offset="0"/><stop id="gs1" offset="1"/></linearGradient>'
+ +'<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#151515" flood-opacity="0.06"/></filter>';
+const txt=(x,y,s,size,g,w,fill,anchor)=>{const t=mk('text',{x,y,'text-anchor':anchor||'middle',class:'lab','font-size':size,'font-weight':w,fill,'letter-spacing':'-0.01em'},g);t.textContent=s;return t};
+const zoneLayer=mk('g',{});
+[[182,640,'Browser · React app'],[662,952,'Supabase · edge functions, auth, Postgres'],[996,1362,'External APIs']].forEach(z=>{
+ mk('rect',{x:z[0],y:10,width:z[1]-z[0],height:582,rx:20,fill:'#FAF9F7',stroke:'#EFEDE9','stroke-width':1},zoneLayer);
+ txt(z[0]+18,40,z[2],13,zoneLayer,600,'#6B665E','start')});
+const edgeLayer=mk('g',{}),EL={};
+for(const k in E)EL[k]=mk('path',{d:rpath(E[k],HOPS[k]),fill:'none',stroke:NEU,'stroke-width':1.5,'stroke-linecap':'round','stroke-linejoin':'round',style:'transition:stroke .45s,opacity .45s'},edgeLayer);
+const trail=mk('g',{}),flow=mk('g',{}),tokLayer=mk('g',{}),nodeLayer=mk('g',{});
+const G={},GI={};
+const USER='<circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3.4-7.5 7.5-7.5s7.5 3.3 7.5 7.5"/>';
+for(const id in N){const n=N[id],g=mk('g',{},nodeLayer),inner=mk('g',{},g);G[id]=g;GI[id]=inner;
+ n.sc=1;n.vel=0;n.target=1;const col=n.col;
+ if(n.r){n.shape=mk('circle',{cx:n.x,cy:n.y,r:n.r,fill:'#fff',stroke:col,'stroke-opacity':.45,'stroke-width':1.5,filter:'url(#soft)',style:'transition:stroke .4s,stroke-opacity .4s'},inner);
+  const ic=mk('g',{transform:`translate(${n.x-13.2},${n.y-28}) scale(1.1)`,fill:'none',stroke:col,'stroke-width':1.9,'stroke-linecap':'round','stroke-linejoin':'round'},inner);ic.innerHTML=USER;
+  txt(n.x,n.y+20,n.t,13,inner,600,INK);
+ }else{n.shape=mk('rect',{x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:12,fill:'#fff',stroke:col,'stroke-opacity':.45,'stroke-width':1.5,filter:'url(#soft)',style:'transition:stroke .4s,stroke-opacity .4s'},inner);
+  txt(n.x,n.y+5,n.t,14,inner,600,INK)}
+ const w=n.r?n.r*2:n.w,h=n.r?n.r*2:n.h,x0=n.x-w/2,y0=n.y-h/2;
+ const cp=mk('clipPath',{id:'cw_'+id},defs);
+ n.wipe=mk('rect',{x:x0,y:y0,width:0,height:h},cp);
+ n.fillShape=n.r?mk('circle',{cx:n.x,cy:n.y,r:n.r,fill:n.tint,'clip-path':`url(#cw_${id})`},inner)
+  :mk('rect',{x:x0,y:y0,width:n.w,height:n.h,rx:12,fill:n.tint,'clip-path':`url(#cw_${id})`},inner);
+ n.shape.parentNode.insertBefore(n.fillShape,n.shape.nextSibling);
+ n.wipeW=w}
+function nodeState(id,s,p){const n=N[id],sh=n.shape,q=s==='work'?(p||0):0;
+ sh.setAttribute('stroke-width',s==='idle'?1.5:s==='done'?2.2:(1.5+.7*q).toFixed(2));
+ sh.setAttribute('stroke-opacity',s==='idle'?.45:1);
+ sh.setAttribute('filter',s==='work'?'url(#lift)':'url(#soft)');
+ n.wipe.setAttribute('width',s==='done'?n.wipeW:s==='work'?(n.wipeW*(p||0)).toFixed(1):0);
+ n.target=s==='work'?1.3:1;
+ if(s==='work')nodeLayer.appendChild(G[id])}
+const ICON={doc:'<path d="M6 2h8l4 4v14H6z"/><path d="M14 2v4h4M9 11h6M9 15h6"/>',ok:'<path d="M5 12l5 5 9-10"/>',
+ link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+ ai:'<path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/>',
+ key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>',
+ db:'<ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/>',
+ score:'<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/>'};
+const AUTH=[['proxy','Receiving the request with the user’s session JWT','Request received','','key'],
+ ['auth','Verifying the session token','User verified','Auth Verified','key'],
+ ['proxy','Whitelisting the model, attaching the server-side Groq key','Forwarded to Groq','','key']];
+const F={
+ onboard:[
+  ['user','Uploads a CV as PDF or DOCX','CV selected','','doc'],
+  ['onb','Reading the file in the browser with pdf.js','Text extracted','Text Extracted','doc'],
+  ['parse','Older iOS fallback: server-side extraction with unpdf','Plain text returned','','doc'],
+  ['onb','Wrapping the text in a structured-extraction prompt','Prompt ready','','doc'],
+  ...AUTH,
+  ['groq','Returning JSON: roles, skills, education, links','Profile JSON returned','CV Parsed','ai'],
+  ['proxy','Relaying the model response to the browser','Response relayed','','ai'],
+  ['onb','User reviews and edits the parsed profile','Profile confirmed','Profile Reviewed','ai'],
+  ['db','Saving the profile row under row-level security','Profile saved','Profile Saved','db'],
+  ['onb','Loading the dashboard from the saved profile','Dashboard ready','','ok'],
+  ['user','Profile ready for every other feature','Onboarded','Onboarded','ok']],
+ job:[
+  ['user','Pastes a job posting URL','URL submitted','','link'],
+  ['job','Sending the URL to the scrape-job function','Request sent','URL Submitted','link'],
+  ['scrape','Starting the scraper chain: Jina, Firecrawl, ScrapeGraph, direct fetch','Chain started','','link'],
+  ['jina','Fetching the page as clean markdown, no API key needed','Fetching page','','link'],
+  ['post','Job posting page is read','Page content returned','Page Scraped','doc'],
+  ['jina','Converting the page to markdown','Markdown ready','','doc'],
+  ['scrape','Enough text? Otherwise Firecrawl, then ScrapeGraph take over','Text accepted','','doc'],
+  ['groq','Extracting title, company, skills and requirements as JSON','Structured JD returned','JD Structured','ai'],
+  ['scrape','Returning the structured job to the browser','Job returned','','ai'],
+  ['job','User confirms company, role and stage','Job confirmed','Job Reviewed','ai'],
+  ['db','Adding the job to the pipeline','Job saved','Job Saved','db'],
+  ['job','Card appears on the pipeline board','On the board','','ok'],
+  ['user','Job tracked, ready to tailor against','Tracking','Job Tracked','ok']],
+ tailor:[
+  ['user','Opens a saved job in the CV Builder','Job selected','','doc'],
+  ['cv','Loading the profile and the job description','Loading','','db'],
+  ['db','Reading the profile and job rows','Rows returned','','db'],
+  ['cv','Pairing the CV with the structured JD','Ready to score','','doc'],
+  ['ats','Hard skills 35, keywords 20, title 15, tools 15, seniority 10, soft skills 5','Baseline score 0–100','Baseline Score','score'],
+  ['cv','Showing missing keywords, building the tailoring prompt','Prompt ready','','doc'],
+  ...AUTH,
+  ['groq','Rewriting summary and bullets toward the JD','Tailored CV returned','CV Tailored','ai'],
+  ['proxy','Relaying the suggestions to the browser','Response relayed','','ai'],
+  ['cv','User accepts or rejects each suggestion','Edits applied','Suggestions Reviewed','ai'],
+  ['ats','Re-scoring the tailored CV against the same JD','Score updated','Rescored','score'],
+  ['cv','Saving this version of the CV','Version ready','','ok'],
+  ['db','Saving to the resume library','Resume saved','Resume Saved','db'],
+  ['cv','Rendering the CV for export','Export ready','','ok'],
+  ['user','Downloads the tailored CV','Exported','Exported','ok']],
+ cover:[
+  ['user','Starts a cover letter for a saved job','Letter started','','doc'],
+  ['cl','Loading the profile and the job','Loading','','db'],
+  ['db','Reading the profile and job rows','Rows returned','','db'],
+  ['cl','Checking CV-vs-JD mismatches, building the prompt','Prompt ready','Context Loaded','doc'],
+  ...AUTH,
+  ['groq','Writing a personalised letter in the chosen tone','Letter returned','Letter Drafted','ai'],
+  ['proxy','Relaying the letter to the browser','Response relayed','','ai'],
+  ['cl','User edits inline or asks for a rewrite','Letter final','Letter Edited','ai'],
+  ['db','Saving to the cover letter library','Letter saved','Letter Saved','db'],
+  ['cl','Formatting the letter for export','Export ready','','ok'],
+  ['user','Downloads the cover letter','Exported','Exported','ok']]};
+const edgeOf=(a,b)=>E[a+'-'+b]?[a+'-'+b,0]:E[b+'-'+a]?[b+'-'+a,1]:null;
+const ORDER=['onboard','job','tailor','cover'];
+const PICKS=[['onboard','CV Parsing'],['job','Job Capture'],['tailor','Resume Tailoring'],['cover','Cover Letter']];
+const SPEED=150,WORK_KEY=2.6,WORK=1.9,HOLD=1.1,END=3.2;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+$('pick').insertAdjacentHTML('beforeend',PICKS.map(p=>`<button class="opt" data-k="${p[0]}" role="tab"><i></i>${p[1]}</button>`).join(''));
+const halo=mk('circle',{r:22,fill:BRAND,opacity:0},tokLayer);
+const tok=mk('g',{},tokLayer);
+const tokBg=mk('circle',{r:13,fill:BRAND,stroke:'#fff','stroke-width':2.5,filter:'url(#lift)'},tok);
+const tokIcon=mk('g',{transform:'translate(-6.5,-6.5) scale(.54)',fill:'none',stroke:'#fff','stroke-width':2.8,'stroke-linecap':'round','stroke-linejoin':'round'},tok);
+let cur,seq,i,phase,t,dur,hidden=false,hover=false,path=null,pathL=0,lastNow=0,dash=0,tokSc=1,tokPt=[0,0];
+function movePill(){const b=document.querySelector('.opt.on');if(!b)return;
+ const p=$('pill');p.style.width=b.offsetWidth+'px';p.style.height=b.offsetHeight+'px';
+ p.style.transform=`translate(${b.offsetLeft-p.offsetLeft}px,${b.offsetTop-p.offsetTop}px)`}
+function readout(id,s){const r=$('read');r.style.setProperty('--sw',CO(id));
+ r.querySelector('b').textContent=NAME[id];r.querySelector('span').textContent=s;
+ const c=r.querySelector('code');c.textContent=API[id];c.title=API[id];r.querySelector('span').title=s}
+function milestones(){return seq.map((s,j)=>({s,j})).filter(o=>o.s[3])}
+function renderSteps(){const ms=milestones();
+ $('steps').innerHTML=ms.map((o,k)=>`${k?'<span class="sep" data-j="'+o.j+'" data-p="'+ms[k-1].j+'"></span>':''}<span class="s" data-j="${o.j}"><span class="dot"></span><span class="lb">${o.s[3].replace(' ','<br>')}</span></span>`).join('')}
+function paintSeps(){const q=Math.min(1,dur?t/dur:1),pos=phase==='move'?(i-1)+q:i;
+ $('steps').querySelectorAll('.sep').forEach(el=>{const j=+el.dataset.j,jp=+el.dataset.p;
+  el.style.setProperty('--f',(Math.max(0,Math.min(1,(pos-jp)/(j-jp)))*100).toFixed(1)+'%')})}
+function markSteps(){const fin=j=>j<i||(j===i&&(phase==='done'||phase==='end'));
+ $('steps').querySelectorAll('.s').forEach(el=>{const j=+el.dataset.j,d=fin(j),now=!d&&j===i&&(phase==='work'||phase==='move'||phase==='land');
+  el.classList.toggle('done',d);el.classList.toggle('now',now)});paintSeps()}
+function focusRoute(){const ue=new Set(),un=new Set(seq.map(s=>s[0]));
+ for(let j=1;j<seq.length;j++)ue.add(edgeOf(seq[j-1][0],seq[j][0])[0]);
+ for(const k in EL){const u=ue.has(k);EL[k].setAttribute('stroke',u?'#C9C6BF':NEU);EL[k].setAttribute('opacity',u?1:.34)}
+ for(const id in G)G[id].style.opacity=un.has(id)?1:.34}
+function placeTok(pt){tokPt=pt;tok.setAttribute('transform',`translate(${pt[0]},${pt[1]}) scale(${tokSc})`);halo.setAttribute('cx',pt[0]);halo.setAttribute('cy',pt[1])}
+function showTok(v){tokSc=1;placeTok(tokPt);tok.setAttribute('opacity',v?1:0);if(!v)halo.setAttribute('opacity',0)}
+function start(k){cur=k;seq=F[k];i=0;trail.innerHTML='';flow.innerHTML='';
+ document.querySelectorAll('.opt').forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+ movePill();for(const id in N)nodeState(id,'idle');focusRoute();renderSteps();
+ tokIcon.innerHTML=ICON[seq[0][4]];placeTok([N.user.x,N.user.y]);showTok(false);
+ readout('user',seq[0][1]);phase='done';t=0;dur=reduce?.01:.6;markSteps()}
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+function next(){if(i>=seq.length-1){phase='end';t=0;dur=END;markSteps();return}
+ const [ek,rev]=edgeOf(seq[i][0],seq[i+1][0]),a=N[seq[i][0]],b=N[seq[i+1][0]];
+ const pts=[[a.x,a.y],...(rev?E[ek].slice().reverse():E[ek]),[b.x,b.y]],d=rpath(pts,HOPS[ek]);
+ const from=CO(seq[i][0]),col=CO(seq[i+1][0]),g=$('flowg');
+ g.setAttribute('x1',pts[0][0]);g.setAttribute('y1',pts[0][1]);g.setAttribute('x2',pts[pts.length-1][0]);g.setAttribute('y2',pts[pts.length-1][1]);
+ $('gs0').setAttribute('stop-color',from);$('gs1').setAttribute('stop-color',col);
+ path=mk('path',{d,fill:'none',stroke:'url(#flowg)','stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round'},trail);
+ flow.innerHTML='';mk('path',{d,fill:'none',stroke:'url(#flowg)','stroke-width':2.6,'stroke-linecap':'round',opacity:.35,'stroke-dasharray':'1 13'},flow);
+ tokBg.setAttribute('fill',col);halo.setAttribute('fill',col);
+ pathL=path.getTotalLength();path.style.strokeDasharray=`${pathL} ${pathL}`;path.style.strokeDashoffset=pathL;
+ i++;phase='move';t=0;dur=reduce?.01:Math.max(1.1,pathL/SPEED);
+ tokIcon.innerHTML=ICON[seq[i][4]];placeTok(pts[0]);showTok(true);readout(seq[i][0],seq[i][1]);markSteps()}
+function frame(now){const dt=Math.min(.05,(now-(lastNow||now))/1000);lastNow=now;
+ for(const id in N){const n=N[id];
+  if(reduce){n.sc=n.target}else{const k=150,c=2*Math.sqrt(k)*.78;n.vel+=((n.target-n.sc)*k-n.vel*c)*dt;n.sc+=n.vel*dt}
+  if(Math.abs(n.sc-1)>0.0015)GI[id].setAttribute('transform',`translate(${n.x},${n.y}) scale(${n.sc.toFixed(4)}) translate(${-n.x},${-n.y})`);
+  else GI[id].removeAttribute('transform')}
+ if(!hidden&&!hover&&seq){t+=dt;const p=Math.min(1,t/dur),id=seq[i][0];
+  if(phase==='move'){const d=pathL*ease(p),q=path.getPointAtLength(d);placeTok([q.x,q.y]);path.style.strokeDashoffset=pathL-d;
+   dash=(dash-dt*46)%14;flow.firstChild&&flow.firstChild.setAttribute('stroke-dashoffset',dash);
+   halo.setAttribute('opacity',(.14*Math.sin(t*6)+.16).toFixed(3));halo.setAttribute('r',(20+3*Math.sin(t*6)).toFixed(2));
+   if(p>=1){phase='land';t=0;dur=reduce?.01:.3;N[id].target=1.3;tok.setAttribute('opacity',1)}}
+  else if(phase==='land'){const u=p;
+   tokSc=Math.max(0,u<.32?1+.34*(u/.32):1.34*(1-ease((u-.32)/.68)));placeTok(tokPt);
+   tok.setAttribute('opacity',u<.58?1:Math.max(0,1-(u-.58)/.42).toFixed(3));
+   halo.setAttribute('opacity',(.3*(1-u)).toFixed(3));halo.setAttribute('r',(12+26*u).toFixed(1));
+   if(p>=1){showTok(false);phase='work';t=0;dur=reduce?1.2:seq[i][3]?WORK_KEY:WORK;nodeState(id,'work',0);markSteps()}}
+  else if(phase==='work'){nodeState(id,'work',p);halo.setAttribute('opacity',0);
+   if(p>=1){phase='done';t=0;dur=HOLD;nodeState(id,'done');readout(id,seq[i][2]);
+    if(path){path.setAttribute('stroke',BRAND);path.setAttribute('stroke-opacity',.5);path.setAttribute('stroke-width',2)}
+    flow.innerHTML='';markSteps()}}
+  else if(phase==='done'){if(p>=1)next()}
+  else if(phase==='end'){if(p>=1)start(ORDER[(ORDER.indexOf(cur)+1)%ORDER.length])}
+  paintSeps()}
+ requestAnimationFrame(frame)}
+$('pick').onclick=e=>{const b=e.target.closest('.opt');if(b){start(b.dataset.k);setTimeout(movePill,0)}};
+$('svg').addEventListener('mouseenter',()=>{hover=true});
+$('svg').addEventListener('mouseleave',()=>{hover=false});
+addEventListener('resize',movePill);
+document.addEventListener('visibilitychange',()=>{hidden=document.hidden});
+start('onboard');requestAnimationFrame(frame);
+if(document.fonts)document.fonts.ready.then(movePill);
+if(window.ResizeObserver)new ResizeObserver(movePill).observe($('pick'));
+</script></body></html>
