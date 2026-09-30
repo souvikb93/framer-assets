@@ -46,6 +46,8 @@ Pages redeploys in under a minute. The Framer node never changes unless the heig
 - [`docs/STREAMLINER_ASSET_GUIDELINES.md`](docs/STREAMLINER_ASSET_GUIDELINES.md) — project
   specifics
 - [`docs/ROLLBACK.md`](docs/ROLLBACK.md) — tags and how to go back
+- [`docs/ANIMATED_SYSTEM_DIAGRAM.md`](docs/ANIMATED_SYSTEM_DIAGRAM.md) — how to build
+  another asset like the to-be system diagram
 
 Type, weight and radius are tokens, declared once per file and restepped at 1024 and 768.
 Nothing hardcodes a px size any more.
